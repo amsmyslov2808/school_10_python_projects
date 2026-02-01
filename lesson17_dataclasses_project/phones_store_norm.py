@@ -72,9 +72,26 @@ def add_phone_to_list(phones, phone):
     phones.append(phone)
 
 
-# 4) удалять мобильные телефоны из списка телефонов
+# 4) удалять мобильные телефоны из списка телефонов по ИД
+def find_phone_index_by_id(phones, id):
+    for i in range(len(phones)):
+        if phones[i].id == id:
+            return i
 
-# 5) изменить поле "Количество на складе" в сущности мобильный телефон
+    return -1
+
+
+def delete_phone_by_id(phones, id):
+    delete_index = find_phone_index_by_id(phones, id)
+
+    if delete_index != -1:
+        phones.pop(delete_index)
+        return True
+
+    return False
+
+
+# 5) изменить поле "Количество на складе" в сущности мобильный телефон по ИД
 
 # 6) изменить всю информацию о мобильном телефоне, кроме поля ИД, предварительно найдя его по ИД
 
@@ -92,6 +109,8 @@ def print_phones(phones):
 
 
 # 8) вывести мобильный телефон по ИД
+def print_phone_by_id(phones, id):
+    
 
 # 9) сохранить список мобильных телефонов в текстовый файл, в двух вариантах
 #     для удобного чтения человеком
@@ -110,5 +129,9 @@ add_phone_to_list(
 add_phone_to_list(
     phones, MobilePhone(2, "brand2", "model2", 10, 3, 228, "status2", 123, 10)
 )
+
+print_phones(phones)
+
+delete_phone_by_id(phones, 3)
 
 print_phones(phones)
