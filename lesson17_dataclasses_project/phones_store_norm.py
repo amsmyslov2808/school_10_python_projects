@@ -27,6 +27,8 @@ class MobilePhone:
     amount: int
 
 
+GLOBAL_MOBILE_PHONE_ID = 0
+
 # действия пользователя в программе
 
 # 1) искать Мобильные телефоны по:
@@ -42,8 +44,33 @@ class MobilePhone:
 #     Ёмкость аккумултора
 #     Вес
 
+
 # 3) добавлять новые мобильные телефоны в список телефонов
-def add_phone_to_list()
+def input_phone_data():
+    print("введите данные телефона")
+
+    brand = input("марку: ")
+    model = input("модель: ")
+    weight = int(input("вес: "))
+    screen_diagonal = float(input("диагональ экрана: "))
+    battery = int(input("ёмкость акумулятора: "))
+    status = input("статус (подержанный, новый): ")
+    price = int(input("цену: "))
+    amount = int(input("количество на складе: "))
+
+    return MobilePhone(
+        0, brand, model, weight, screen_diagonal, battery, status, price, amount
+    )
+
+
+def add_phone_to_list(phones, phone):
+    global GLOBAL_MOBILE_PHONE_ID
+    GLOBAL_MOBILE_PHONE_ID += 1
+
+    phone.id = GLOBAL_MOBILE_PHONE_ID
+
+    phones.append(phone)
+
 
 # 4) удалять мобильные телефоны из списка телефонов
 
@@ -51,7 +78,12 @@ def add_phone_to_list()
 
 # 6) изменить всю информацию о мобильном телефоне, кроме поля ИД, предварительно найдя его по ИД
 
+
 # 7) вывести список всех мобильных телефонов
+def print_phones(phones):
+    for item in phones:
+        print(item)
+
 
 # 8) вывести мобильный телефон по ИД
 
@@ -62,3 +94,8 @@ def add_phone_to_list()
 # 10) загрузить список мобильных телефонов из текстового файла
 
 phones = []
+
+add_phone_to_list(phones, input_phone_data())
+add_phone_to_list(phones, input_phone_data())
+
+print_phones(phones)
