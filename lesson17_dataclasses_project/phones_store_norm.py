@@ -81,8 +81,14 @@ def add_phone_to_list(phones, phone):
 
 # 7) вывести список всех мобильных телефонов
 def print_phones(phones):
+    print(
+        f"{'ИД':<4}{'Марка':<11}{'Модель':<16}{'Вес':<5}{'Диаг(inch)':<11}{'Аккум(мАч)':<11}{'Состояние':<10}{'Цена(руб)':<12}{'В наличии':<9}"
+    )
+
     for item in phones:
-        print(item)
+        print(
+            f"{item.id:<4}{item.brand:<11}{item.model:<16}{item.weight:<5}{item.screen_diagonal:<11.1f}{item.battery:<11}{item.status:<10}{item.price:<12}{item.amount:<9}"
+        )
 
 
 # 8) вывести мобильный телефон по ИД
@@ -95,7 +101,14 @@ def print_phones(phones):
 
 phones = []
 
-add_phone_to_list(phones, input_phone_data())
-add_phone_to_list(phones, input_phone_data())
+# add_phone_to_list(phones, input_phone_data())
+# add_phone_to_list(phones, input_phone_data())
+
+add_phone_to_list(
+    phones, MobilePhone(1, "brand1", "model1", 10, 3.4, 228, "status1", 123, 10)
+)
+add_phone_to_list(
+    phones, MobilePhone(2, "brand2", "model2", 10, 3, 228, "status2", 123, 10)
+)
 
 print_phones(phones)
