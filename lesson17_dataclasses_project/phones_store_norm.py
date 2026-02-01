@@ -110,7 +110,19 @@ def print_phones(phones):
 
 # 8) вывести мобильный телефон по ИД
 def print_phone_by_id(phones, id):
-    
+    print_index = find_phone_index_by_id(phones, id)
+
+    if print_index != -1:
+        print(
+            f"{'ИД':<10}{'Марка':<15}{'Модель':<16}{'Вес':<10}{'Диаг(inch)':<15}{'Аккум(мАч)':<15}{'Состояние':<15}{'Цена(руб)':<15}{'В наличии':<15}"
+        )
+        item = phones[print_index]
+        print(
+            f"{item.id:<10}{item.brand:<15}{item.model:<16}{item.weight:<10}{item.screen_diagonal:<15.1f}{item.battery:<15}{item.status:<15}{item.price:<15}{item.amount:<15}"
+        )
+    else:
+        print(f"Телефон с id = {id} не найден")
+
 
 # 9) сохранить список мобильных телефонов в текстовый файл, в двух вариантах
 #     для удобного чтения человеком
@@ -130,8 +142,10 @@ add_phone_to_list(
     phones, MobilePhone(2, "brand2", "model2", 10, 3, 228, "status2", 123, 10)
 )
 
-print_phones(phones)
+# print_phones(phones)
 
-delete_phone_by_id(phones, 3)
+# delete_phone_by_id(phones, 3)
 
-print_phones(phones)
+# print_phones(phones)
+
+print_phone_by_id(phones, 1)
