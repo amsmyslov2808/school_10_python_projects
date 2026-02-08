@@ -135,7 +135,7 @@ def sort_phones_by_screen_diagonal(phones, order):
 
 
 #     Ёмкость аккумултора
-def sort_phones_by_screen_battery(phones, order):
+def sort_phones_by_battery(phones, order):
     is_sorted = False
     offset = 0
 
@@ -152,7 +152,7 @@ def sort_phones_by_screen_battery(phones, order):
 
 
 #     Вес
-def sort_phones_by_screen_weight(phones, order):
+def sort_phones_by_weight(phones, order):
     is_sorted = False
     offset = 0
 
