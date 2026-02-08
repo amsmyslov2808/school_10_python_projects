@@ -29,21 +29,143 @@ class MobilePhone:
 
 GLOBAL_MOBILE_PHONE_ID = 0
 
+ASC = "ascending"
+DESC = "descending"
+
 # действия пользователя в программе
 
+
 # 1) искать Мобильные телефоны по:
-#     ИД
 #     Марка
+def get_phones_by_brand(phones, brand):
+    finded_phones = []
+
+    for item in phones:
+        if item.brand == brand:
+            finded_phones.append(item)
+
+    return finded_phones
+
+
 #     Цена
+def get_phones_by_price(phones, price):
+    finded_phones = []
+
+    for item in phones:
+        if item.price == price:
+            finded_phones.append(item)
+
+    return finded_phones
+
+
 #     Состояние
+def get_phones_by_status(phones, status):
+    finded_phones = []
+
+    for item in phones:
+        if item.status == status:
+            finded_phones.append(item)
+
+    return finded_phones
 
 
 # 2) сортировать Мобильные телефоны по:
 #     ИД
+def is_swap(number_current, number_next, order):
+    if order == ASC:
+        if number_next < number_current:
+            return True
+        else:
+            return False
+    elif order == DESC:
+        if number_next > number_current:
+            return True
+        else:
+            return False
+
+
+def sort_phones_by_id(phones, order):
+    is_sorted = False
+    offset = 0
+
+    while is_sorted == False:
+        is_sorted = True
+        for i in range(len(phones) - 1 - offset):
+            if is_swap(phones[i].id, phones[i + 1].id, order):
+                temp = phones[i + 1]
+                phones[i + 1] = phones[i]
+                phones[i] = temp
+                is_sorted = False
+
+        offset += 1
+
+
 #     Цена
+def sort_phones_by_price(phones, order):
+    is_sorted = False
+    offset = 0
+
+    while is_sorted == False:
+        is_sorted = True
+        for i in range(len(phones) - 1 - offset):
+            if is_swap(phones[i].price, phones[i + 1].price, order):
+                temp = phones[i + 1]
+                phones[i + 1] = phones[i]
+                phones[i] = temp
+                is_sorted = False
+
+        offset += 1
+
+
 #     Диагональ экрана
+def sort_phones_by_screen_diagonal(phones, order):
+    is_sorted = False
+    offset = 0
+
+    while is_sorted == False:
+        is_sorted = True
+        for i in range(len(phones) - 1 - offset):
+            if is_swap(phones[i].screen_diagonal, phones[i + 1].screen_diagonal, order):
+                temp = phones[i + 1]
+                phones[i + 1] = phones[i]
+                phones[i] = temp
+                is_sorted = False
+
+        offset += 1
+
+
 #     Ёмкость аккумултора
+def sort_phones_by_screen_battery(phones, order):
+    is_sorted = False
+    offset = 0
+
+    while is_sorted == False:
+        is_sorted = True
+        for i in range(len(phones) - 1 - offset):
+            if is_swap(phones[i].battery, phones[i + 1].battery, order):
+                temp = phones[i + 1]
+                phones[i + 1] = phones[i]
+                phones[i] = temp
+                is_sorted = False
+
+        offset += 1
+
+
 #     Вес
+def sort_phones_by_screen_weight(phones, order):
+    is_sorted = False
+    offset = 0
+
+    while is_sorted == False:
+        is_sorted = True
+        for i in range(len(phones) - 1 - offset):
+            if is_swap(phones[i].weight, phones[i + 1].weight, order):
+                temp = phones[i + 1]
+                phones[i + 1] = phones[i]
+                phones[i] = temp
+                is_sorted = False
+
+        offset += 1
 
 
 # 3) добавлять новые мобильные телефоны в список телефонов
