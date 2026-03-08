@@ -29,9 +29,9 @@ class Tamagotchi:
         return self.__health_level > self.__MIN_LEVEL
 
     def feed(self) -> None:
-        increase = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE)
+        increase_energy = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE)
 
-        self.__energy_level = self.__energy_level + increase
+        self.__energy_level = self.__energy_level + increase_energy
 
         if self.__energy_level > self.__MAX_LEVEL:
             self.__energy_level = self.__MAX_LEVEL
@@ -41,3 +41,7 @@ class Tamagotchi:
             )
 
             self.__health_level = self.__health_level - 1
+
+        increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE - 1)
+
+        self.__health_level = self.__health_level + increase_health
