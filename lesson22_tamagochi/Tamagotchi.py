@@ -15,6 +15,11 @@ class Tamagotchi:
     __MIN_INCREASE = 1
     __MAX_ICREASE = 3
 
+    __MIN_DECREASE = 1
+    __MAX_DECREASE = 3
+
+    __EVENT_CHANCE = 30
+
     def __init__(self, name: str, type_animal: str, age: int):
         self.__name = name
         self.__type_animal = type_animal
@@ -45,3 +50,30 @@ class Tamagotchi:
         increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE - 1)
 
         self.__health_level = self.__health_level + increase_health
+
+    def play(self) -> None:
+        increase_happiness = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE)
+
+        self.__happiness_level = self.__happiness_level + increase_happiness
+
+        if self.__happiness_level > self.__MAX_LEVEL:
+            self.__happiness_level = self.__MAX_LEVEL
+
+            print(
+                f"{self.__name} слишком много играл. его уровень счастья достиг максимума."
+            )
+
+        decrease_energy = random.randint(self.__MIN_DECREASE, self.__MAX_DECREASE)
+
+        self.__energy_level = self.__energy_level - decrease_energy
+
+        event_number = random.randint(1, 100)
+        if 1 <= event_number <= self.__EVENT_CHANCE:
+
+            decrease_health = random.randint(self.__MIN_DECREASE, self.__MAX_DECREASE)
+
+            print(
+                f"{self.__name} поранился во время игры. его здоровье ухудшается на {decrease_health} пунктов."
+            )
+
+            self.__health_level = self.__health_level - decrease_health
