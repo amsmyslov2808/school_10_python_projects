@@ -141,12 +141,30 @@ class Tamagotchi:
             )
             self.__health_level -= 1
 
-    def get_status(self) -> str:
-        return (
+    def print_status(self) -> None:
+        def format_level(level: int) -> str:
+            left_scale = ""
+            right_scale = ""
+
+            if level > self.__MIN_LEVEL:
+                left_scale = "□" * self.__MAX_LEVEL
+                right_scale = "■" * level + "□" * (self.__MAX_LEVEL - level)
+
+            elif level < self.__MIN_LEVEL:
+                left_scale = "□" * (self.__MAX_LEVEL - level) + "■" * level
+                right_scale = "□" * self.__MAX_LEVEL
+
+            elif level == self.__MIN_LEVEL:
+                left_scale = "□" * self.__MAX_LEVEL
+                right_scale = "□" * self.__MAX_LEVEL
+
+            return f"[{left_scale}]|[{right_scale}] ({level:+d})"
+
+        print(
             f"Имя: {self.__name}\n"
             f"Вид животного: {self.__type_animal}\n"
             f"Возраст: {self.__age}\n"
-            f"Уровень здоровья: {self.__health_level}\n"
-            f"Уровень счастья: {self.__happiness_level}\n"
-            f"Уровень энергии: {self.__energy_level}"
+            f"Уровень здоровья: {format_level(self.__health_level)}\n"
+            f"Уровень счастья: {format_level(self.__happiness_level)}\n"
+            f"Уровень энергии: {format_level(self.__energy_level)}"
         )
