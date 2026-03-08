@@ -77,3 +77,27 @@ class Tamagotchi:
             )
 
             self.__health_level = self.__health_level - decrease_health
+
+    def sleep(self) -> None:
+        increase_energy = random.randint(
+            self.__MIN_INCREASE + 2, self.__MAX_ICREASE + 3
+        )
+
+        self.__energy_level = self.__energy_level + increase_energy
+
+        if self.__energy_level > self.__MAX_LEVEL:
+            self.__energy_level = self.__MAX_LEVEL
+
+            print(
+                f"{self.__name} слишком много спал. его уровень энергии достиг максимума."
+            )
+
+        increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE - 1)
+
+        self.__health_level = self.__health_level + increase_health
+
+        decrease_happiness = random.randint(
+            self.__MIN_DECREASE, self.__MAX_DECREASE - 1
+        )
+
+        self.__happiness_level = self.__happiness_level - decrease_happiness
