@@ -13,7 +13,7 @@ class Tamagotchi:
     __MAX_LEVEL = 10
 
     __MIN_INCREASE = 1
-    __MAX_ICREASE = 3
+    __MAX_INCREASE = 3
 
     __MIN_DECREASE = 1
     __MAX_DECREASE = 3
@@ -34,7 +34,7 @@ class Tamagotchi:
         return self.__health_level > self.__MIN_LEVEL
 
     def feed(self) -> None:
-        increase_energy = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE)
+        increase_energy = random.randint(self.__MIN_INCREASE, self.__MAX_INCREASE)
 
         self.__energy_level += increase_energy
 
@@ -47,12 +47,12 @@ class Tamagotchi:
 
             self.__health_level -= 1
 
-        increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE - 1)
+        increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_INCREASE - 1)
 
         self.__health_level += increase_health
 
     def play(self) -> None:
-        increase_happiness = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE)
+        increase_happiness = random.randint(self.__MIN_INCREASE, self.__MAX_INCREASE)
 
         self.__happiness_level += increase_happiness
 
@@ -80,7 +80,7 @@ class Tamagotchi:
 
     def sleep(self) -> None:
         increase_energy = random.randint(
-            self.__MIN_INCREASE + 2, self.__MAX_ICREASE + 3
+            self.__MIN_INCREASE + 2, self.__MAX_INCREASE + 3
         )
 
         self.__energy_level += increase_energy
@@ -92,7 +92,7 @@ class Tamagotchi:
                 f"{self.__name} слишком много спал. его уровень энергии достиг максимума."
             )
 
-        increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_ICREASE - 1)
+        increase_health = random.randint(self.__MIN_INCREASE, self.__MAX_INCREASE - 1)
 
         self.__health_level += increase_health
 
@@ -158,7 +158,7 @@ class Tamagotchi:
                 left_scale = "□" * self.__MAX_LEVEL
                 right_scale = "□" * self.__MAX_LEVEL
 
-            return f"[{left_scale}]|[{right_scale}] ({level:+d})"
+            return f"{left_scale}|{right_scale} ({level:+d})"
 
         print(
             f"Имя: {self.__name}\n"
