@@ -24,7 +24,7 @@ class Tamagotchi:
     __change_happiness: int
     __change_energy: int
 
-    def __init__(self, name: str, type_animal: str, age: int):
+    def __init__(self, name: str, type_animal: str, age: int) -> None:
         self.__name = name
         self.__type_animal = type_animal
         self.__age = age
