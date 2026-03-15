@@ -33,9 +33,9 @@ while tamagotchi.is_alive():
     tamagotchi.reset_params_changes()
 
     print("Выберите действие с вашим Тамагочи")
-    print("1. Покормить")
-    print("2. Поиграть")
-    print("3. Уложить спать")
+    print("1. Покормить (энергия ↑, здоровье ↑↓)")
+    print("2. Поиграть (счастье ↑, энергия ↓, здоровье возможно ↓)")
+    print("3. Уложить спать (счастье ↓, энергия ↑, здоровье ↑)")
 
     action = console_services.input_int("введите число от 1 до 3: ", 1, 3)
 
@@ -47,6 +47,8 @@ while tamagotchi.is_alive():
         tamagotchi.sleep()
 
     tamagotchi.normalized_parameters()
+
+    tamagotchi.check_health()
 
     tamagotchi.random_event()
 

@@ -28,6 +28,7 @@ class Tamagotchi:
         self.__name = name
         self.__type_animal = type_animal
         self.__age = age
+
         self.__health_level = random.randint(self.__MIN_LEVEL + 5, self.__MAX_LEVEL - 3)
         self.__happiness_level = random.randint(
             self.__MIN_LEVEL + 5, self.__MAX_LEVEL - 3
@@ -96,7 +97,7 @@ class Tamagotchi:
         self.__happiness_level -= decrease_happiness
 
         self.__change_health += increase_health
-        self.__change_energy -= increase_energy
+        self.__change_energy += increase_energy
         self.__change_happiness -= decrease_happiness
 
     def random_event(self) -> None:
@@ -134,15 +135,19 @@ class Tamagotchi:
                 self.__energy_level -= decrease
 
     def check_health(self) -> None:
-        if self.__energy_level <= self.__MIN_LEVEL:
+        if self.__energy_level < self.__MIN_LEVEL + 3:
             print(f"{self.__name} слишком устал и его здоровье ухудшается на 1 пункт.")
             self.__health_level -= 1
 
-        if self.__happiness_level <= self.__MIN_LEVEL:
+            self.__change_health -= 1
+
+        if self.__happiness_level < self.__MIN_LEVEL + 3:
             print(
                 f"{self.__name} слишком грустный и его здоровье ухудшается на 1 пункт."
             )
             self.__health_level -= 1
+
+            self.__change_health -= 1
 
     def normalized_parameters(self) -> None:
         if self.__energy_level > self.__MAX_LEVEL:
@@ -162,6 +167,11 @@ class Tamagotchi:
             print(
                 f"{self.__name} слишком много играл. его уровень счастья достиг максимума."
             )
+
+        if self.__health_level > self.__MAX_LEVEL:
+            self.__health_level = self.__MAX_LEVEL
+
+            print(f"{self.__name} максимально здоров и больше поздороветь не может")
 
     def print_status(self) -> None:
         def format_level(level: int) -> str:
