@@ -14,7 +14,7 @@ from telebot.storage import StateMemoryStorage
 
 
 bot = telebot.TeleBot(
-    "7974872453:AAFQHoSf7MQyT_AwZV0kreyhIFi5gY6rob4",
+    "",
     state_storage=StateMemoryStorage(),
     use_class_middlewares=True,
 )
@@ -80,11 +80,15 @@ def message_text_team_title_handler(message: types.Message, state: StateContext)
 
     state.add_data(title=title)
 
+    output_text = (
+        "Введите количество участников вашей команде( от 1-го до 4-х человек): "
+    )
+
     state.set(RegistrationStates.input_team_count_members)
 
     bot.send_message(
         message.chat.id,
-        "Введите количество участников вашей команде( от 1-го до 4-х человек): ",
+        output_text,
     )
 
 
