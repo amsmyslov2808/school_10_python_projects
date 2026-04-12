@@ -12,9 +12,22 @@ from telebot.states.sync.context import StateContext
 from telebot.states.sync.middleware import StateMiddleware
 from telebot.storage import StateMemoryStorage
 
+import random
+
+used_numbers = set()
+
+
+def generate_unique_number():
+    while True:
+        number = random.randint(1000, 9999)
+
+        if number not in used_numbers:
+            used_numbers.add(number)
+            return number
+
 
 bot = telebot.TeleBot(
-    "",
+    "7974872453:AAFQHoSf7MQyT_AwZV0kreyhIFi5gY6rob4",
     state_storage=StateMemoryStorage(),
     use_class_middlewares=True,
 )
@@ -29,9 +42,10 @@ class RegistrationStates(StatesGroup):
     input_team_count_members = State()
     input_team_chosen_task = State()
     save_team_data = State()
+    check_admin_password = State()
 
 
-@bot.message_handler(commands=["start"])
+@bot.message_handler(commands=["start", "cancel_registration"])
 def command_start_handler(message: types.Message, state: StateContext):
 
     output_text = "Приветствуем вас на регистрации Хакатона!\nВыберите нужное действие:"
@@ -48,6 +62,7 @@ def command_start_handler(message: types.Message, state: StateContext):
     inline_reply_keyboard.add(button_add_team)
     inline_reply_keyboard.add(button_show_all_teams)
 
+    state.delete()
     state.set(RegistrationStates.main_menu_buttons_press)
 
     bot.send_message(message.chat.id, output_text, reply_markup=inline_reply_keyboard)
@@ -67,6 +82,39 @@ def callback_buttons_main_menu_team_handler(
         state.set(RegistrationStates.input_team_title)
 
         bot.send_message(call.message.chat.id, output_text)
+    elif call.data == "button_show_all_teams":
+        output_text = "Пожалуйста введи пароль чтобы получить доступ к списку зарегистрированных команд"
+
+        state.set(RegistrationStates.check_admin_password)
+
+        bot.send_message(call.message.chat.id, output_text)
+
+
+@bot.message_handler(state=RegistrationStates.check_admin_password)
+def message_text_team_title_handler(message: types.Message, state: StateContext):
+    password = message.text.strip()
+
+    if password != "12345":
+        output_text = "Ошибка. Пароль неверный. Повторите ввод ещё раз или вернитесь в главное меню путём ввода команды /start"
+        bot.send_message(message.chat.id, output_text)
+        return
+
+    if len(registrations_dictionary) == 0:
+        output_text = (
+            "Записей пока нет. Вернитесь в главное меню путём ввода команды /start"
+        )
+        bot.send_message(message.chat.id, output_text)
+        return
+
+    lines = []
+    for unique_key, data in registrations_dictionary.items():
+        lines.append(
+            f"Команда: {data['title']} Количество человек: {data['count_members']} Выбранная задача: {data['chosen_task']} (ИД команды: {unique_key})"
+        )
+    output_text = "\n".join(lines)
+    output_text += "\n\n\nВернитесь в главное меню путём ввода команды /start"
+
+    bot.send_message(message.chat.id, output_text)
 
 
 @bot.message_handler(state=RegistrationStates.input_team_title)
@@ -177,18 +225,16 @@ def callback_buttons_save_team_data_handler(
     bot.answer_callback_query(call.id)
 
     if call.data == "button_yes":
-        user_id = call.from_user.id
+        unique_key = generate_unique_number()
 
         with state.data() as data:
-            registrations_dictionary[user_id] = {
+            registrations_dictionary[unique_key] = {
                 "title": data["title"],
                 "count_members": data["count_members"],
                 "chosen_task": data["chosen_task"],
             }
 
-        output_text = (
-            "Данные успешно сохранены\nНажите /start для перехода в главное меню"
-        )
+        output_text = f"Данные успешно сохранены\nИД вашей команды = {unique_key} Сохраните его\nНажите /start для перехода в главное меню"
 
     elif call.data == "button_no":
 
