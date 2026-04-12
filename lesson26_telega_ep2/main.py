@@ -34,6 +34,9 @@ bot = telebot.TeleBot(
 
 
 registrations_dictionary = {}
+# MAX_TELEGRAM_MESSAGE_LENGTH = 4096
+MAX_TELEGRAM_MESSAGE_LENGTH = 300
+ADMIN_RETURN_TO_MENU_TEXT = "\n\n\nВернитесь в главное меню путём ввода команды /start"
 
 
 class RegistrationStates(StatesGroup):
@@ -43,6 +46,79 @@ class RegistrationStates(StatesGroup):
     input_team_chosen_task = State()
     save_team_data = State()
     check_admin_password = State()
+
+
+def get_registered_teams_lines():
+    lines = []
+
+    for unique_key, data in registrations_dictionary.items():
+        lines.append(
+            f"Команда: {data['title']} Количество человек: {data['count_members']} Выбранная задача: {data['chosen_task']} (ИД команды: {unique_key})"
+        )
+
+    return lines
+
+
+def split_text_lines_to_pages(lines):
+    reserved_length_for_footer_and_page_info = len(ADMIN_RETURN_TO_MENU_TEXT) + 40
+    max_page_body_length = (
+        MAX_TELEGRAM_MESSAGE_LENGTH - reserved_length_for_footer_and_page_info
+    )
+
+    pages = []
+    current_page_lines = []
+    current_page_length = 0
+
+    for line in lines:
+        line_length_with_separator = len(line) + (1 if current_page_lines else 0)
+
+        if (
+            current_page_lines
+            and current_page_length + line_length_with_separator > max_page_body_length
+        ):
+            pages.append("\n".join(current_page_lines))
+            current_page_lines = [line]
+            current_page_length = len(line)
+            continue
+
+        current_page_lines.append(line)
+        current_page_length += line_length_with_separator
+
+    if current_page_lines:
+        pages.append("\n".join(current_page_lines))
+
+    return pages
+
+
+def get_admin_page_text(page_text, page_index, total_pages):
+    return (
+        f"{page_text}{ADMIN_RETURN_TO_MENU_TEXT}\n\n"
+        f"Страница {page_index + 1}/{total_pages}"
+    )
+
+
+def build_admin_pagination_keyboard(page_index, total_pages):
+    inline_reply_keyboard = telebot.types.InlineKeyboardMarkup()
+    buttons = []
+
+    if page_index > 0:
+        buttons.append(
+            telebot.types.InlineKeyboardButton(
+                "⬅️ Назад", callback_data="admin_prev_page"
+            )
+        )
+
+    if page_index < total_pages - 1:
+        buttons.append(
+            telebot.types.InlineKeyboardButton(
+                "Вперёд ➡️", callback_data="admin_next_page"
+            )
+        )
+
+    if buttons:
+        inline_reply_keyboard.row(*buttons)
+
+    return inline_reply_keyboard
 
 
 @bot.message_handler(commands=["start", "cancel_registration"])
@@ -91,7 +167,7 @@ def callback_buttons_main_menu_team_handler(
 
 
 @bot.message_handler(state=RegistrationStates.check_admin_password)
-def message_text_team_title_handler(message: types.Message, state: StateContext):
+def message_check_admin_password_handler(message: types.Message, state: StateContext):
     password = message.text.strip()
 
     if password != "12345":
@@ -106,15 +182,64 @@ def message_text_team_title_handler(message: types.Message, state: StateContext)
         bot.send_message(message.chat.id, output_text)
         return
 
-    lines = []
-    for unique_key, data in registrations_dictionary.items():
-        lines.append(
-            f"Команда: {data['title']} Количество человек: {data['count_members']} Выбранная задача: {data['chosen_task']} (ИД команды: {unique_key})"
-        )
-    output_text = "\n".join(lines)
-    output_text += "\n\n\nВернитесь в главное меню путём ввода команды /start"
+    lines = get_registered_teams_lines()
+    output_text = "\n".join(lines) + ADMIN_RETURN_TO_MENU_TEXT
 
-    bot.send_message(message.chat.id, output_text)
+    if len(output_text) <= MAX_TELEGRAM_MESSAGE_LENGTH:
+        bot.send_message(message.chat.id, output_text)
+        return
+
+    pages = split_text_lines_to_pages(lines)
+    current_page_index = 0
+
+    state.add_data(admin_pages=pages, admin_current_page=current_page_index)
+
+    current_page_text = get_admin_page_text(
+        pages[current_page_index], current_page_index, len(pages)
+    )
+    inline_reply_keyboard = build_admin_pagination_keyboard(
+        current_page_index, len(pages)
+    )
+
+    bot.send_message(
+        message.chat.id, current_page_text, reply_markup=inline_reply_keyboard
+    )
+
+
+@bot.callback_query_handler(
+    func=lambda call: call.data in ["admin_prev_page", "admin_next_page"],
+    state=RegistrationStates.check_admin_password,
+)
+def callback_admin_pagination_handler(call: types.CallbackQuery, state: StateContext):
+    with state.data() as data:
+        pages = data.get("admin_pages")
+        current_page = data.get("admin_current_page", 0)
+
+    if not pages:
+        bot.answer_callback_query(
+            call.id,
+            "Список команд не найден. Введите пароль ещё раз.",
+            show_alert=False,
+        )
+        return
+
+    if call.data == "admin_prev_page" and current_page > 0:
+        current_page -= 1
+    elif call.data == "admin_next_page" and current_page < len(pages) - 1:
+        current_page += 1
+
+    state.add_data(admin_current_page=current_page)
+
+    output_text = get_admin_page_text(pages[current_page], current_page, len(pages))
+    inline_reply_keyboard = build_admin_pagination_keyboard(current_page, len(pages))
+
+    bot.edit_message_text(
+        output_text,
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=inline_reply_keyboard,
+    )
+    bot.answer_callback_query(call.id)
 
 
 @bot.message_handler(state=RegistrationStates.input_team_title)
