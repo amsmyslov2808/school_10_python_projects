@@ -46,6 +46,7 @@ class RegistrationStates(StatesGroup):
     input_team_chosen_task = State()
     save_team_data = State()
     check_admin_password = State()
+    admin_teams_pagination = State()
 
 
 def get_registered_teams_lines():
@@ -60,33 +61,51 @@ def get_registered_teams_lines():
 
 
 def split_text_lines_to_pages(lines):
+    # Резервируем место под постоянный хвост сообщения (инструкция вернуться в меню)
+    # и небольшой запас под строку с номером страницы ("Страница X/Y").
     reserved_length_for_footer_and_page_info = len(ADMIN_RETURN_TO_MENU_TEXT) + 40
+    # Считаем максимально допустимую длину "тела" страницы без футера и индекса страницы.
     max_page_body_length = (
         MAX_TELEGRAM_MESSAGE_LENGTH - reserved_length_for_footer_and_page_info
     )
 
+    # Сюда будем складывать готовые страницы (каждая страница - одна строка текста с \n).
     pages = []
+    # Временный список строк, которые сейчас набираются в текущую страницу.
     current_page_lines = []
+    # Текущая длина текста в набираемой странице.
     current_page_length = 0
 
+    # Проходим по всем строкам с командами, чтобы разложить их по страницам.
     for line in lines:
+        # Длина новой строки с учётом возможного символа переноса строки перед ней.
         line_length_with_separator = len(line) + (1 if current_page_lines else 0)
 
+        # Если текущая страница уже не пустая и новая строка не помещается,
+        # закрываем текущую страницу и начинаем новую с этой строки.
         if (
             current_page_lines
             and current_page_length + line_length_with_separator > max_page_body_length
         ):
+            # Сохраняем готовую страницу как текст, объединяя строки через \n.
             pages.append("\n".join(current_page_lines))
+            # Создаём новую страницу, в которую сразу кладём текущую строку.
             current_page_lines = [line]
+            # Обновляем длину новой страницы (пока в ней только эта строка).
             current_page_length = len(line)
+            # Переходим к следующей строке входных данных.
             continue
 
+        # Если строка помещается, добавляем её в текущую страницу.
         current_page_lines.append(line)
+        # Увеличиваем счётчик длины текущей страницы.
         current_page_length += line_length_with_separator
 
+    # После цикла добавляем последнюю страницу, если в ней что-то накопилось.
     if current_page_lines:
         pages.append("\n".join(current_page_lines))
 
+    # Возвращаем список готовых страниц.
     return pages
 
 
@@ -193,6 +212,7 @@ def message_check_admin_password_handler(message: types.Message, state: StateCon
     current_page_index = 0
 
     state.add_data(admin_pages=pages, admin_current_page=current_page_index)
+    state.set(RegistrationStates.admin_teams_pagination)
 
     current_page_text = get_admin_page_text(
         pages[current_page_index], current_page_index, len(pages)
@@ -206,11 +226,12 @@ def message_check_admin_password_handler(message: types.Message, state: StateCon
     )
 
 
-@bot.callback_query_handler(
-    func=lambda call: call.data in ["admin_prev_page", "admin_next_page"],
-    state=RegistrationStates.check_admin_password,
-)
+@bot.callback_query_handler(state=RegistrationStates.admin_teams_pagination)
 def callback_admin_pagination_handler(call: types.CallbackQuery, state: StateContext):
+    if call.data not in ["admin_prev_page", "admin_next_page"]:
+        bot.answer_callback_query(call.id)
+        return
+
     with state.data() as data:
         pages = data.get("admin_pages")
         current_page = data.get("admin_current_page", 0)
