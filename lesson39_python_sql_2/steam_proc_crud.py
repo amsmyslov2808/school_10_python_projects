@@ -44,7 +44,7 @@ def get_connection():
     return psycopg.connect(**DB_CONFIG)
 
 
-def get_users_with_roles(conn) -> list[User]:
+def get_all_users_with_roles(conn) -> list[User]:
     users_list = []
 
     with conn.cursor(row_factory=dict_row) as cur:
@@ -93,7 +93,7 @@ def get_users_with_roles(conn) -> list[User]:
     return users_list
 
 
-def get_users(conn) -> list[User]:
+def get_all_users(conn) -> list[User]:
     with conn.cursor(row_factory=class_row(User)) as cur:
 
         cur.execute("""SELECT 
@@ -157,7 +157,7 @@ def print_users_with_roles(users: list[User]):
 with get_connection() as conn:
 
     # users = get_users(conn)
-    users_with_roles = get_users_with_roles(conn)
+    users_with_roles = get_all_users_with_roles(conn)
     print_users_with_roles(users_with_roles)
 
     # for user in users_with_roles:
