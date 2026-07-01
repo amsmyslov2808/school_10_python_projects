@@ -131,12 +131,34 @@ def print_users(users: list[User]):
         )
 
 
+def print_users_with_roles(users: list[User]):
+    print("Пользователи:")
+
+    print(
+        f"{'ID':<5}{'NICKNAME':<20}{'EMAIL':<30}{'LEVEL':<10}{'HOURS':<10}{'LAST ONLINE':<22}{'ONLINE':<10}{'ROLE ID':<10}{'ROLE NAME':<15}{'DESCRIPTION'}"
+    )
+
+    for user in users:
+
+        print(
+            f"{user.id:<5}"
+            f"{user.nickname:<20}"
+            f"{user.email:<30}"
+            f"{user.steam_level:<10}"
+            f"{user.hours_played:<10}"
+            f"{user.last_online_to_str():<22}"
+            f"{user.is_online_to_str():<10}"
+            f"{user.role_id:<10}"
+            f"{user.role.role_name:<15}"
+            f"{user.role.description}"
+        )
+
+
 with get_connection() as conn:
 
-    users = get_users(conn)
+    # users = get_users(conn)
     users_with_roles = get_users_with_roles(conn)
-
-    print_users(users)
+    print_users_with_roles(users_with_roles)
 
     # for user in users_with_roles:
     #     if user.role.role_name == "Игрок":
