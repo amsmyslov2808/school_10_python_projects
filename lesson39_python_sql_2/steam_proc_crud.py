@@ -15,7 +15,7 @@ DB_CONFIG = {
 
 @dataclass(slots=True)
 class UserRole:
-    id: int
+    id: int | None = None
     role_name: str
     description: str
 
@@ -173,6 +173,22 @@ def print_roles(roles: list[UserRole]):
 
     for role in roles:
         print(f"{role.id:<5}" f"{role.role_name:<15}" f"{role.description:<50}")
+
+
+def add_new_role(conn, role: UserRole):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+                    INSERT INTO public.user_roles(
+                    role_name, description)
+                    VALUES (%s, %s)
+                    """,
+            (
+                role.role_name,
+                role.description,
+            ),
+        )
+    conn.commit()
 
 
 with get_connection() as conn:
