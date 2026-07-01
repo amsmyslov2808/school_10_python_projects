@@ -15,9 +15,9 @@ DB_CONFIG = {
 
 @dataclass(slots=True)
 class UserRole:
-    id: int | None = None
     role_name: str
     description: str
+    id: int | None = None
 
 
 @dataclass(slots=True)
@@ -179,7 +179,7 @@ def add_new_role(conn, role: UserRole):
     with conn.cursor() as cur:
         cur.execute(
             """
-                    INSERT INTO public.user_roles(
+                    INSERT INTO user_roles(
                     role_name, description)
                     VALUES (%s, %s)
                     """,
@@ -192,16 +192,17 @@ def add_new_role(conn, role: UserRole):
 
 
 with get_connection() as conn:
+    while True:
+        users_with_roles = get_all_users_with_roles(conn)
+        print_users_with_roles(users_with_roles)
 
-    # users = get_users(conn)
-    users_with_roles = get_all_users_with_roles(conn)
-    print_users_with_roles(users_with_roles)
+        print("\n" + "*" * 50 + "\n")
 
-    print("\n" + "*" * 50 + "\n")
+        roles = get_all_roles(conn)
+        print_roles(roles)
 
-    roles = get_all_roles(conn)
-    print_roles(roles)
+        print("\n" + "=" * 100 + "\n")
 
-    # for user in users_with_roles:
-    #     if user.role.role_name == "Игрок":
-    #         print(f"{user.id} {user.nickname} {user.role.role_name} ")
+        input()
+
+        add_new_role(conn, UserRole("новая роль", "новое описание"))
