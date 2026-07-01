@@ -31,6 +31,8 @@ class User:
     is_online: bool
     role_id: int
 
+    role: UserRole | None = None
+
     def last_online_to_str(self):
         return self.last_online.strftime("%d.%m.%Y %H:%M:%S")
 
@@ -42,31 +44,53 @@ def get_connection():
     return psycopg.connect(**DB_CONFIG)
 
 
-# def get_users(conn) -> list[User]:
-#     users_list = []
-#     users_from_db = None
+def get_users_with_roles(conn) -> list[User]:
+    users_list = []
 
-#     with conn.cursor(row_factory=dict_row) as cur:
+    with conn.cursor(row_factory=dict_row) as cur:
 
-#         cur.execute("SELECT * FROM users ORDER BY id ASC")
+        cur.execute(""" 
+                    SELECT 
+                    u.id,
+                    u.nickname,
+                    u.email,
+                    u.steam_level, 
+                    u.hours_played, 
+                    u.last_online,
+                    u.is_online,
+                    u.role_id,
 
-#         users_from_db = cur.fetchall()
+                    ur.id as ur_id,
+                    ur.role_name,
+                    ur.description
 
-#     for user in users_from_db:
-#         new_user = User(
-#             id=user["id"],
-#             nickname=user["nickname"],
-#             email=user["email"],
-#             steam_level=user["steam_level"],
-#             hours_played=user["hours_played"],
-#             last_online=user["last_online"],
-#             is_online=user["is_online"],
-#             role_id=user["role_id"],
-#         )
+                    FROM users as u
+                    JOIN user_roles as ur
+                    ON u.role_id = ur.id
 
-#         users_list.append(new_user)
+                    ORDER BY u.id ASC
+                    """)
 
-#     return users_list
+        rows = cur.fetchall()
+
+        for row in rows:
+            new_role = UserRole(row["ur_id"], row["role_name"], row["description"])
+
+            new_user = User(
+                id=row["id"],
+                nickname=row["nickname"],
+                email=row["email"],
+                steam_level=row["steam_level"],
+                hours_played=row["hours_played"],
+                last_online=row["last_online"],
+                is_online=row["is_online"],
+                role_id=row["role_id"],
+                role=new_role,
+            )
+
+            users_list.append(new_user)
+
+    return users_list
 
 
 def get_users(conn) -> list[User]:
@@ -110,5 +134,10 @@ def print_users(users: list[User]):
 with get_connection() as conn:
 
     users = get_users(conn)
+    users_with_roles = get_users_with_roles(conn)
 
     print_users(users)
+
+    # for user in users_with_roles:
+    #     if user.role.role_name == "Игрок":
+    #         print(f"{user.id} {user.nickname} {user.role.role_name} ")
