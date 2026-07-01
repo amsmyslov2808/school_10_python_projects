@@ -154,11 +154,37 @@ def print_users_with_roles(users: list[User]):
         )
 
 
+def get_all_roles(conn) -> list[UserRole]:
+    with conn.cursor(row_factory=class_row(UserRole)) as cur:
+
+        cur.execute("""SELECT 
+                    id, 
+                    role_name,
+                    description
+                    FROM user_roles ORDER BY id ASC""")
+
+        return list(cur.fetchall())
+
+
+def print_roles(roles: list[UserRole]):
+    print("Пользователи:")
+
+    print(f"{'ID':<5}{'ROLE NAME':<15}{'DESCRIPTION':<50}")
+
+    for role in roles:
+        print(f"{role.id:<5}" f"{role.role_name:<15}" f"{role.description:<50}")
+
+
 with get_connection() as conn:
 
     # users = get_users(conn)
     users_with_roles = get_all_users_with_roles(conn)
     print_users_with_roles(users_with_roles)
+
+    print("\n" + "*" * 50 + "\n")
+
+    roles = get_all_roles(conn)
+    print_roles(roles)
 
     # for user in users_with_roles:
     #     if user.role.role_name == "Игрок":
