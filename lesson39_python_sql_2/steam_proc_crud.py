@@ -13,7 +13,14 @@ DB_CONFIG = {
 }
 
 
-@dataclass
+@dataclass(slots=True)
+class UserRole:
+    id: int
+    role_name: str
+    description: str
+
+
+@dataclass(slots=True)
 class User:
     id: int
     nickname: str

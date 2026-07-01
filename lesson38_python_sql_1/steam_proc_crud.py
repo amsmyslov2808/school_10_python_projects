@@ -13,7 +13,7 @@ DB_CONFIG = {
 }
 
 
-@dataclass
+@dataclass(slots=True)
 class User:
     id: int
     nickname: str
