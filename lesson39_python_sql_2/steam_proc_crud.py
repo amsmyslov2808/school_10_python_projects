@@ -15,9 +15,9 @@ DB_CONFIG = {
 
 @dataclass(slots=True)
 class UserRole:
+    id: int | None = None
     role_name: str
     description: str
-    id: int | None = None
 
 
 @dataclass(slots=True)
@@ -74,7 +74,11 @@ def get_all_users_with_roles(conn) -> list[User]:
         rows = cur.fetchall()
 
         for row in rows:
-            new_role = UserRole(row["ur_id"], row["role_name"], row["description"])
+            new_role = UserRole(
+                id=row["ur_id"],
+                role_name=row["role_name"],
+                description=row["description"],
+            )
 
             new_user = User(
                 id=row["id"],
@@ -205,4 +209,6 @@ with get_connection() as conn:
 
         input()
 
-        add_new_role(conn, UserRole("новая роль", "новое описание"))
+        add_new_role(
+            conn, UserRole(role_name="новая роль", description="новое описание")
+        )
