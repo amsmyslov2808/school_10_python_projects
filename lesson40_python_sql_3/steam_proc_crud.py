@@ -214,6 +214,23 @@ def add_new_role(conn, role: UserRole):
     conn.commit()
 
 
+def update_role_by_id(conn, role: UserRole):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+                    UPDATE user_roles
+	                SET role_name=%s, description=%s
+	                WHERE id=%s
+                    """,
+            (
+                role.role_name,
+                role.description,
+                role.id,
+            ),
+        )
+    conn.commit()
+
+
 def delete_role_by_id(conn, id: int):
     with conn.cursor() as cur:
         cur.execute(
@@ -290,7 +307,11 @@ with get_connection() as conn:
                     conn, UserRole(role_name=role_name, description=description)
                 )
             elif menu_number == 3:
-                pass
+                id = int(input("введите id роли: "))
+
+                delete_role_by_id(conn, id)
+
+                print("успешно удалено")
             elif menu_number == 4:
                 pass
             elif menu_number == 0:
@@ -301,3 +322,4 @@ with get_connection() as conn:
             print(
                 f"Ошибка в работе с программой. Кратко: {str(e)}. Подробно: {repr(e)}"
             )
+            is_run = False
