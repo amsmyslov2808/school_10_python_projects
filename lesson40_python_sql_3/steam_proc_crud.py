@@ -170,11 +170,13 @@ def print_users_with_roles(users: list[User]):
 def get_all_roles(conn) -> list[UserRole]:
     with conn.cursor(row_factory=class_row(UserRole)) as cur:
 
-        cur.execute("""SELECT 
+        cur.execute("""
+                    SELECT 
                     id, 
                     role_name,
                     description
-                    FROM user_roles ORDER BY id ASC""")
+                    FROM user_roles ORDER BY id ASC
+                    """)
 
         return list(cur.fetchall())
 
@@ -208,6 +210,18 @@ def add_new_role(conn, role: UserRole):
                 role.role_name,
                 role.description,
             ),
+        )
+    conn.commit()
+
+
+def delete_role_by_id(conn, id: int):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+                    DELETE FROM user_roles
+                    WHERE id = %s
+                    """,
+            (id,),
         )
     conn.commit()
 
@@ -282,7 +296,7 @@ with get_connection() as conn:
             elif menu_number == 0:
                 is_run = False
 
-            input("для продолжения нажмите <Enter>")
+            input("\n\n\nдля продолжения нажмите <Enter>\n\n\n")
         except Exception as e:
             print(
                 f"Ошибка в работе с программой. Кратко: {str(e)}. Подробно: {repr(e)}"
