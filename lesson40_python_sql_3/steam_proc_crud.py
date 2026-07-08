@@ -318,9 +318,19 @@ with get_connection() as conn:
 
                 print("успешно удалено")
             elif menu_number == 4:
-                update_role_by_id()
 
-                print("успешно обновлено")
+                id = int(input("введите id роли: "))
+                role_name = input("введите название роли: ")
+                description = input("введите описание роли: ")
+
+                is_update = update_role_by_id(
+                    conn, UserRole(id=id, role_name=role_name, description=description)
+                )
+
+                if is_update == True:
+                    print("успешно обновлено")
+                else:
+                    print(f"роль c id {id} не найдена")
             elif menu_number == 0:
                 is_run = False
 
