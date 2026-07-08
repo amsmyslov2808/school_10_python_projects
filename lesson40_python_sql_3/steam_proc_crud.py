@@ -140,6 +140,47 @@ def get_user_by_id(conn, id: int) -> User | None:
         return cur.fetchone()
 
 
+def add_new_user(conn, user: User):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+                    INSERT INTO users
+                    (
+                    nickname,
+                    email,
+                    steam_level,
+                    hours_played,
+                    last_online,
+                    is_online,
+                    role_id
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """,
+            (
+                user.nickname,
+                user.email,
+                user.steam_level,
+                user.hours_played,
+                user.last_online,
+                user.is_online,
+                user.role_id,
+            ),
+        )
+    conn.commit()
+
+
+def delete_user_by_id(conn, id: int):
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+                    DELETE FROM users
+                    WHERE id = %s
+                    """,
+            (id,),
+        )
+    conn.commit()
+
+
 def print_users_table_header():
     print(
         f"{'ID':<5}{'NICKNAME':<20}{'EMAIL':<30}{'LEVEL':<10}{'HOURS':<10}{'LAST ONLINE':<22}{'ONLINE':<10}{'ROLE ID':<10}"
@@ -319,6 +360,8 @@ with get_connection() as conn:
             print("4. Обновить роль по id")
 
             print("5. Вывести пользователя по id")
+            print("6. Добавить нового пользователя")
+            print("7. Удалить пользователя по id")
 
             print("0. Выход")
 
@@ -342,6 +385,8 @@ with get_connection() as conn:
                 add_new_role(
                     conn, UserRole(role_name=role_name, description=description)
                 )
+
+                print("успешно добавлено")
             elif menu_number == 3:
                 id = int(input("введите id роли: "))
 
@@ -374,9 +419,44 @@ with get_connection() as conn:
                 else:
                     print_one_user(user)
             elif menu_number == 6:
-                is_run = False
+                nickname = input("Никнейм: ")
+                email = input("Email: ")
+                steam_level = int(input("Уровень Steam: "))
+                hours_played = int(input("Часы: "))
+
+                # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
+                last_online = datetime.fromisoformat(
+                    input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
+                )
+
+                # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
+                is_online = bool(
+                    input(
+                        "В сети? (Нажмите Enter если нет, введите любой символ если да): "
+                    )
+                )
+                role_id = int(input("ID роли: "))
+
+                add_new_user(
+                    conn,
+                    user=User(
+                        nickname=nickname,
+                        email=email,
+                        steam_level=steam_level,
+                        hours_played=hours_played,
+                        last_online=last_online,
+                        is_online=is_online,
+                        role_id=role_id,
+                    ),
+                )
+
+                print("успешно добавлено")
             elif menu_number == 7:
-                is_run = False
+                id = int(input("введите id роли: "))
+
+                delete_user_by_id(conn, id)
+
+                print("успешно удалено")
             elif menu_number == 8:
                 is_run = False
             elif menu_number == 0:
