@@ -181,6 +181,40 @@ def delete_user_by_id(conn, id: int):
     conn.commit()
 
 
+def update_user_by_id(conn, user: User) -> bool:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+                    UPDATE users                    
+                    SET 
+                    nickname=%s,
+                    email=%s,
+                    steam_level=%s,
+                    hours_played=%s,
+                    last_online=%s,
+                    is_online=%s,
+                    role_id=%s
+                    WHERE id=%s
+                    """,
+            (
+                user.nickname,
+                user.email,
+                user.steam_level,
+                user.hours_played,
+                user.last_online,
+                user.is_online,
+                user.role_id,
+                user.id,
+            ),
+        )
+
+        updated_rows = cur.rowcount
+
+    conn.commit()
+
+    return updated_rows != 0
+
+
 def print_users_table_header():
     print(
         f"{'ID':<5}{'NICKNAME':<20}{'EMAIL':<30}{'LEVEL':<10}{'HOURS':<10}{'LAST ONLINE':<22}{'ONLINE':<10}{'ROLE ID':<10}"
@@ -362,6 +396,7 @@ with get_connection() as conn:
             print("5. Вывести пользователя по id")
             print("6. Добавить нового пользователя")
             print("7. Удалить пользователя по id")
+            print("8. Обновить пользователя по id")
 
             print("0. Выход")
 
@@ -458,7 +493,44 @@ with get_connection() as conn:
 
                 print("успешно удалено")
             elif menu_number == 8:
-                is_run = False
+                id = int(input("введите id пользователя: "))
+
+                nickname = input("Никнейм: ")
+                email = input("Email: ")
+                steam_level = int(input("Уровень Steam: "))
+                hours_played = int(input("Часы: "))
+
+                # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
+                last_online = datetime.fromisoformat(
+                    input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
+                )
+
+                # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
+                is_online = bool(
+                    input(
+                        "В сети? (Нажмите Enter если нет, введите любой символ если да): "
+                    )
+                )
+                role_id = int(input("ID роли: "))
+
+                is_update = update_user_by_id(
+                    conn,
+                    user=User(
+                        id=id,
+                        nickname=nickname,
+                        email=email,
+                        steam_level=steam_level,
+                        hours_played=hours_played,
+                        last_online=last_online,
+                        is_online=is_online,
+                        role_id=role_id,
+                    ),
+                )
+
+                if is_update == True:
+                    print("успешно обновлено")
+                else:
+                    print(f"пользователь c id {id} не найден")
             elif menu_number == 0:
                 is_run = False
 
