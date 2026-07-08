@@ -15,14 +15,13 @@ DB_CONFIG = {
 
 @dataclass(slots=True)
 class UserRole:
-    id: int | None = None
     role_name: str
     description: str
+    id: int | None = None
 
 
 @dataclass(slots=True)
 class User:
-    id: int
     nickname: str
     email: str
     steam_level: int
@@ -30,6 +29,8 @@ class User:
     last_online: datetime
     is_online: bool
     role_id: int
+
+    id: int | None = None
 
     role: UserRole | None = None
 
@@ -257,7 +258,7 @@ with get_connection() as conn:
             menu_number = int(input("выберите пункт меню: "))
 
             if menu_number == 1:
-                id = int(input("введите название роли: "))
+                id = int(input("введите id роли: "))
                 role = get_role_by_id(conn, id)
 
                 print_roles_table_header()
