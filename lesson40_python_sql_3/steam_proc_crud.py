@@ -118,25 +118,54 @@ def get_all_users(conn) -> list[User]:
         return list(cur.fetchall())
 
 
-def print_users(users: list[User]):
-    print("Пользователи:")
+def get_user_by_id(conn, id: int) -> User | None:
+    with conn.cursor(row_factory=class_row(User)) as cur:
+        cur.execute(
+            """
+                        SELECT 
+                        id, 
+                        nickname, 
+                        email, 
+                        steam_level, 
+                        hours_played,
+                        last_online,
+                        is_online,
+                        role_id
+                        FROM users
+                        WHERE id=%s
+                        """,
+            (id,),
+        )
 
+        return cur.fetchone()
+
+
+def print_users_table_header():
     print(
         f"{'ID':<5}{'NICKNAME':<20}{'EMAIL':<30}{'LEVEL':<10}{'HOURS':<10}{'LAST ONLINE':<22}{'ONLINE':<10}{'ROLE ID':<10}"
     )
 
-    for user in users:
 
-        print(
-            f"{user.id:<5}"
-            f"{user.nickname:<20}"
-            f"{user.email:<30}"
-            f"{user.steam_level:<10}"
-            f"{user.hours_played:<10}"
-            f"{user.last_online_to_str():<22}"
-            f"{user.is_online_to_str():<10}"
-            f"{user.role_id:<10}"
-        )
+def print_one_user(user: User):
+    print(
+        f"{user.id:<5}"
+        f"{user.nickname:<20}"
+        f"{user.email:<30}"
+        f"{user.steam_level:<10}"
+        f"{user.hours_played:<10}"
+        f"{user.last_online_to_str():<22}"
+        f"{user.is_online_to_str():<10}"
+        f"{user.role_id:<10}"
+    )
+
+
+def print_users(users: list[User]):
+    print("Пользователи:")
+
+    print_users_table_header()
+
+    for user in users:
+        print_one_user(user)
 
 
 def print_users_with_roles(users: list[User]):
@@ -289,6 +318,8 @@ with get_connection() as conn:
             print("3. Удалить роль по id")
             print("4. Обновить роль по id")
 
+            print("5. Вывести пользователя по id")
+
             print("0. Выход")
 
             menu_number = int(input("выберите пункт меню: "))
@@ -331,6 +362,23 @@ with get_connection() as conn:
                     print("успешно обновлено")
                 else:
                     print(f"роль c id {id} не найдена")
+            elif menu_number == 5:
+                id = int(input("введите id пользователя: "))
+
+                user = get_user_by_id(conn, id)
+
+                print_users_table_header()
+
+                if user == None:
+                    print(f"Пользователь с id {id} не найден")
+                else:
+                    print_one_user(user)
+            elif menu_number == 6:
+                is_run = False
+            elif menu_number == 7:
+                is_run = False
+            elif menu_number == 8:
+                is_run = False
             elif menu_number == 0:
                 is_run = False
 
