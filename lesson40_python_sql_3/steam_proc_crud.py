@@ -214,7 +214,7 @@ def add_new_role(conn, role: UserRole):
     conn.commit()
 
 
-def update_role_by_id(conn, role: UserRole):
+def update_role_by_id(conn, role: UserRole) -> bool:
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -228,7 +228,12 @@ def update_role_by_id(conn, role: UserRole):
                 role.id,
             ),
         )
+
+        updated_rows = cur.rowcount
+
     conn.commit()
+
+    return updated_rows != 0
 
 
 def delete_role_by_id(conn, id: int):
@@ -313,7 +318,9 @@ with get_connection() as conn:
 
                 print("успешно удалено")
             elif menu_number == 4:
-                pass
+                update_role_by_id()
+
+                print("успешно обновлено")
             elif menu_number == 0:
                 is_run = False
 
