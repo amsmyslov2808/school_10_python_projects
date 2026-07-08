@@ -281,6 +281,8 @@ with get_connection() as conn:
                 pass
             elif menu_number == 0:
                 is_run = False
+
+            input("для продолжения нажмите <Enter>")
         except Exception as e:
             print(
                 f"Ошибка в работе с программой. Кратко: {str(e)}. Подробно: {repr(e)}"
