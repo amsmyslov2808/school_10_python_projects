@@ -99,6 +99,29 @@ def print_users_with_roles(users: list[User]):
         )
 
 
+def get_all_roles(conn) -> list[UserRole]:
+    query = select(UserRole).order_by(UserRole.id)
+
+    return list(session.scalars(query).all())
+
+
+def print_one_role(role: UserRole):
+    print(f"{role.id:<5}" f"{role.role_name:<15}" f"{role.description:<50}")
+
+
+def print_roles_table_header():
+    print(f"{'ID':<5}{'ROLE NAME':<15}{'DESCRIPTION':<50}")
+
+
+def print_roles(roles: list[UserRole]):
+    print("Роли:")
+
+    print_roles_table_header()
+
+    for role in roles:
+        print_one_role(role)
+
+
 with get_session_local() as session:
     is_run = True
 
@@ -109,10 +132,10 @@ with get_session_local() as session:
 
             print("\n" + "*" * 50 + "\n")
 
-            # roles = get_all_roles(conn)
-            # print_roles(roles)
+            roles = get_all_roles(session)
+            print_roles(roles)
 
-            # print("\n" + "=" * 100 + "\n")
+            print("\n" + "=" * 100 + "\n")
 
             print("Меню:")
             print("1. Вывести роль по id")
@@ -129,16 +152,16 @@ with get_session_local() as session:
 
             menu_number = int(input("выберите пункт меню: "))
 
-        #     if menu_number == 1:
-        #         id = int(input("введите id роли: "))
-        #         role = get_role_by_id(conn, id)
+            # if menu_number == 1:
+            #     id = int(input("введите id роли: "))
+            #     role = get_role_by_id(conn, id)
 
-        #         print_roles_table_header()
+            #     print_roles_table_header()
 
-        #         if role == None:
-        #             print(f"Роль с id {id} не найдена")
-        #         else:
-        #             print_one_role(role)
+            #     if role == None:
+            #         print(f"Роль с id {id} не найдена")
+            #     else:
+            #         print_one_role(role)
 
         #     elif menu_number == 2:
         #         role_name = input("введите название роли: ")
