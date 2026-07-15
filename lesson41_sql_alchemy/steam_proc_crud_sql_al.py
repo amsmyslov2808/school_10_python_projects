@@ -54,3 +54,14 @@ class User(Base):
     )
 
     role: Mapped[UserRole] = relationship(back_populates="users")
+
+
+engine = create_engine(DATABASE_URL, echo=True)
+
+get_session_local = sessionmaker(
+    bind=engine,
+    expire_on_commit=False,
+)
+
+with get_session_local() as session:
+    print("ok")
