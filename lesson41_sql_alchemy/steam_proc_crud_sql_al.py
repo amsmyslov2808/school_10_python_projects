@@ -114,6 +114,18 @@ def add_new_role(session: Session, role: UserRole):
     session.commit()
 
 
+def delete_role_by_id(session: Session, id: int):
+    role = get_role_by_id(session, id)
+
+    if role == None:
+        return False
+
+    session.delete(role)
+    session.commit()
+
+    return True
+
+
 def print_one_role(role: UserRole):
     print(f"{role.id:<5}" f"{role.role_name:<15}" f"{role.description:<50}")
 
@@ -180,13 +192,16 @@ with get_session_local() as session:
                     session, UserRole(role_name=role_name, description=description)
                 )
 
-            #         print("успешно добавлено")
-            #     elif menu_number == 3:
-            #         id = int(input("введите id роли: "))
+                print("успешно добавлено")
+            elif menu_number == 3:
+                id = int(input("введите id роли: "))
 
-            #         delete_role_by_id(conn, id)
+                is_deleted = delete_role_by_id(session, id)
 
-            #         print("успешно удалено")
+                if is_deleted == True:
+                    print("Роль удалена")
+                else:
+                    print("Роль не найдена")
             #     elif menu_number == 4:
 
             #         id = int(input("введите id роли: "))
