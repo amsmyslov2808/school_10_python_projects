@@ -37,13 +37,11 @@ class UserRole(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = 
-    nickname: Mapped[str] = 
-    email: Mapped[str] = 
-    steam_level: Mapped[int] = 
-    hours_played: Mapped[int] = 
-    last_online: Mapped[datetime] = 
-    is_online: Mapped[bool] = 
-    role_id: Mapped[int] = 
-
-    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    nickname: Mapped[str] = mapped_column(String(50), nullable=False)
+    email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    steam_level: Mapped[int] = mapped_column(Integer, nullable=False)
+    hours_played: Mapped[int] = mapped_column(Integer, nullable=False)
+    last_online: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    is_online: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    role_id: Mapped[int] = mapped_column(Integer, nullable=False)
