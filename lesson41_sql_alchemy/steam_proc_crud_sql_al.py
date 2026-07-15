@@ -33,6 +33,8 @@ class UserRole(Base):
     role_name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(String(500), nullable=False)
 
+    users: Mapped[list["User"]] = relationship(back_populates="role")
+
 
 class User(Base):
     __tablename__ = "users"
@@ -44,4 +46,11 @@ class User(Base):
     hours_played: Mapped[int] = mapped_column(Integer, nullable=False)
     last_online: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_online: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    role_id: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    role_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("user_roles.id", ondelete="RESTRICT", onupdate="RESTRICT"),
+        nullable=False,
+    )
+
+    role: Mapped[UserRole] = relationship(back_populates="users")
