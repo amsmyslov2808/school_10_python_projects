@@ -76,6 +76,10 @@ def get_all_users_with_roles(session: Session) -> list[User]:
     return list(session.scalars(query).all())
 
 
+def get_user_by_id(session: Session, id: int) -> User | None:
+    return session.get(User, id)
+
+
 def print_users_with_roles(users: list[User]):
     print("Пользователи:")
 
@@ -97,6 +101,34 @@ def print_users_with_roles(users: list[User]):
             f"{user.role.role_name:<15}"
             f"{user.role.description}"
         )
+
+
+def print_users_table_header():
+    print(
+        f"{'ID':<5}{'NICKNAME':<20}{'EMAIL':<30}{'LEVEL':<10}{'HOURS':<10}{'LAST ONLINE':<22}{'ONLINE':<10}{'ROLE ID':<10}"
+    )
+
+
+def print_one_user(user: User):
+    print(
+        f"{user.id:<5}"
+        f"{user.nickname:<20}"
+        f"{user.email:<30}"
+        f"{user.steam_level:<10}"
+        f"{user.hours_played:<10}"
+        f"{user.last_online_to_str():<22}"
+        f"{user.is_online_to_str():<10}"
+        f"{user.role_id:<10}"
+    )
+
+
+def print_users(users: list[User]):
+    print("Пользователи:")
+
+    print_users_table_header()
+
+    for user in users:
+        print_one_user(user)
 
 
 def get_all_roles(session: Session) -> list[UserRole]:
@@ -231,17 +263,17 @@ with get_session_local() as session:
                     print("успешно обновлено")
                 else:
                     print(f"роль c id {id} не найдена")
-            #     elif menu_number == 5:
-            #         id = int(input("введите id пользователя: "))
+            elif menu_number == 5:
+                id = int(input("введите id пользователя: "))
 
-            #         user = get_user_by_id(conn, id)
+                user = get_user_by_id(session, id)
 
-            #         print_users_table_header()
+                print_users_table_header()
 
-            #         if user == None:
-            #             print(f"Пользователь с id {id} не найден")
-            #         else:
-            #             print_one_user(user)
+                if user == None:
+                    print(f"Пользователь с id {id} не найден")
+                else:
+                    print_one_user(user)
             #     elif menu_number == 6:
             #         nickname = input("Никнейм: ")
             #         email = input("Email: ")
