@@ -29,7 +29,7 @@ class Base(DeclarativeBase):
 class UserRole(Base):
     __tablename__ = "user_roles"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     role_name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(String(500), nullable=False)
 
@@ -39,7 +39,7 @@ class UserRole(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     nickname: Mapped[str] = mapped_column(String(50), nullable=False)
     email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     steam_level: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -109,6 +109,11 @@ def get_role_by_id(session: Session, id: int) -> UserRole | None:
     return session.get(UserRole, id)
 
 
+def add_new_role(session: Session, role: UserRole):
+    session.add(role)
+    session.commit()
+
+
 def print_one_role(role: UserRole):
     print(f"{role.id:<5}" f"{role.role_name:<15}" f"{role.description:<50}")
 
@@ -167,128 +172,128 @@ with get_session_local() as session:
                 else:
                     print_one_role(role)
 
-        #     elif menu_number == 2:
-        #         role_name = input("введите название роли: ")
-        #         description = input("введите описание роли: ")
+            elif menu_number == 2:
+                role_name = input("введите название роли: ")
+                description = input("введите описание роли: ")
 
-        #         add_new_role(
-        #             conn, UserRole(role_name=role_name, description=description)
-        #         )
+                add_new_role(
+                    session, UserRole(role_name=role_name, description=description)
+                )
 
-        #         print("успешно добавлено")
-        #     elif menu_number == 3:
-        #         id = int(input("введите id роли: "))
+            #         print("успешно добавлено")
+            #     elif menu_number == 3:
+            #         id = int(input("введите id роли: "))
 
-        #         delete_role_by_id(conn, id)
+            #         delete_role_by_id(conn, id)
 
-        #         print("успешно удалено")
-        #     elif menu_number == 4:
+            #         print("успешно удалено")
+            #     elif menu_number == 4:
 
-        #         id = int(input("введите id роли: "))
-        #         role_name = input("введите название роли: ")
-        #         description = input("введите описание роли: ")
+            #         id = int(input("введите id роли: "))
+            #         role_name = input("введите название роли: ")
+            #         description = input("введите описание роли: ")
 
-        #         is_update = update_role_by_id(
-        #             conn, UserRole(id=id, role_name=role_name, description=description)
-        #         )
+            #         is_update = update_role_by_id(
+            #             conn, UserRole(id=id, role_name=role_name, description=description)
+            #         )
 
-        #         if is_update == True:
-        #             print("успешно обновлено")
-        #         else:
-        #             print(f"роль c id {id} не найдена")
-        #     elif menu_number == 5:
-        #         id = int(input("введите id пользователя: "))
+            #         if is_update == True:
+            #             print("успешно обновлено")
+            #         else:
+            #             print(f"роль c id {id} не найдена")
+            #     elif menu_number == 5:
+            #         id = int(input("введите id пользователя: "))
 
-        #         user = get_user_by_id(conn, id)
+            #         user = get_user_by_id(conn, id)
 
-        #         print_users_table_header()
+            #         print_users_table_header()
 
-        #         if user == None:
-        #             print(f"Пользователь с id {id} не найден")
-        #         else:
-        #             print_one_user(user)
-        #     elif menu_number == 6:
-        #         nickname = input("Никнейм: ")
-        #         email = input("Email: ")
-        #         steam_level = int(input("Уровень Steam: "))
-        #         hours_played = int(input("Часы: "))
+            #         if user == None:
+            #             print(f"Пользователь с id {id} не найден")
+            #         else:
+            #             print_one_user(user)
+            #     elif menu_number == 6:
+            #         nickname = input("Никнейм: ")
+            #         email = input("Email: ")
+            #         steam_level = int(input("Уровень Steam: "))
+            #         hours_played = int(input("Часы: "))
 
-        #         # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
-        #         last_online = datetime.fromisoformat(
-        #             input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
-        #         )
+            #         # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
+            #         last_online = datetime.fromisoformat(
+            #             input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
+            #         )
 
-        #         # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
-        #         is_online = bool(
-        #             input(
-        #                 "В сети? (Нажмите Enter если нет, введите любой символ если да): "
-        #             )
-        #         )
-        #         role_id = int(input("ID роли: "))
+            #         # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
+            #         is_online = bool(
+            #             input(
+            #                 "В сети? (Нажмите Enter если нет, введите любой символ если да): "
+            #             )
+            #         )
+            #         role_id = int(input("ID роли: "))
 
-        #         add_new_user(
-        #             conn,
-        #             user=User(
-        #                 nickname=nickname,
-        #                 email=email,
-        #                 steam_level=steam_level,
-        #                 hours_played=hours_played,
-        #                 last_online=last_online,
-        #                 is_online=is_online,
-        #                 role_id=role_id,
-        #             ),
-        #         )
+            #         add_new_user(
+            #             conn,
+            #             user=User(
+            #                 nickname=nickname,
+            #                 email=email,
+            #                 steam_level=steam_level,
+            #                 hours_played=hours_played,
+            #                 last_online=last_online,
+            #                 is_online=is_online,
+            #                 role_id=role_id,
+            #             ),
+            #         )
 
-        #         print("успешно добавлено")
-        #     elif menu_number == 7:
-        #         id = int(input("введите id роли: "))
+            #         print("успешно добавлено")
+            #     elif menu_number == 7:
+            #         id = int(input("введите id роли: "))
 
-        #         delete_user_by_id(conn, id)
+            #         delete_user_by_id(conn, id)
 
-        #         print("успешно удалено")
-        #     elif menu_number == 8:
-        #         id = int(input("введите id пользователя: "))
+            #         print("успешно удалено")
+            #     elif menu_number == 8:
+            #         id = int(input("введите id пользователя: "))
 
-        #         nickname = input("Никнейм: ")
-        #         email = input("Email: ")
-        #         steam_level = int(input("Уровень Steam: "))
-        #         hours_played = int(input("Часы: "))
+            #         nickname = input("Никнейм: ")
+            #         email = input("Email: ")
+            #         steam_level = int(input("Уровень Steam: "))
+            #         hours_played = int(input("Часы: "))
 
-        #         # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
-        #         last_online = datetime.fromisoformat(
-        #             input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
-        #         )
+            #         # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
+            #         last_online = datetime.fromisoformat(
+            #             input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
+            #         )
 
-        #         # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
-        #         is_online = bool(
-        #             input(
-        #                 "В сети? (Нажмите Enter если нет, введите любой символ если да): "
-        #             )
-        #         )
-        #         role_id = int(input("ID роли: "))
+            #         # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
+            #         is_online = bool(
+            #             input(
+            #                 "В сети? (Нажмите Enter если нет, введите любой символ если да): "
+            #             )
+            #         )
+            #         role_id = int(input("ID роли: "))
 
-        #         is_update = update_user_by_id(
-        #             conn,
-        #             user=User(
-        #                 id=id,
-        #                 nickname=nickname,
-        #                 email=email,
-        #                 steam_level=steam_level,
-        #                 hours_played=hours_played,
-        #                 last_online=last_online,
-        #                 is_online=is_online,
-        #                 role_id=role_id,
-        #             ),
-        #         )
+            #         is_update = update_user_by_id(
+            #             conn,
+            #             user=User(
+            #                 id=id,
+            #                 nickname=nickname,
+            #                 email=email,
+            #                 steam_level=steam_level,
+            #                 hours_played=hours_played,
+            #                 last_online=last_online,
+            #                 is_online=is_online,
+            #                 role_id=role_id,
+            #             ),
+            #         )
 
-        #         if is_update == True:
-        #             print("успешно обновлено")
-        #         else:
-        #             print(f"пользователь c id {id} не найден")
-        #     elif menu_number == 0:
-        #         is_run = False
+            #         if is_update == True:
+            #             print("успешно обновлено")
+            #         else:
+            #             print(f"пользователь c id {id} не найден")
+            #     elif menu_number == 0:
+            #         is_run = False
 
-        #     input("\n\n\nдля продолжения нажмите <Enter>\n\n\n")
+            input("\n\n\nдля продолжения нажмите <Enter>\n\n\n")
         except Exception as e:
             print(
                 f"Ошибка в работе с программой. Кратко: {str(e)}. Подробно: {repr(e)}"
