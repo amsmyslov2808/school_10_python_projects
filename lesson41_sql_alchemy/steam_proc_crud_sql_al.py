@@ -62,7 +62,7 @@ class User(Base):
         return "да" if self.is_online == True else "нет"
 
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)
 
 get_session_local = sessionmaker(
     bind=engine,
@@ -99,10 +99,14 @@ def print_users_with_roles(users: list[User]):
         )
 
 
-def get_all_roles(conn) -> list[UserRole]:
+def get_all_roles(session: Session) -> list[UserRole]:
     query = select(UserRole).order_by(UserRole.id)
 
     return list(session.scalars(query).all())
+
+
+def get_role_by_id(session: Session, id: int) -> UserRole | None:
+    return session.get(UserRole, id)
 
 
 def print_one_role(role: UserRole):
@@ -152,16 +156,16 @@ with get_session_local() as session:
 
             menu_number = int(input("выберите пункт меню: "))
 
-            # if menu_number == 1:
-            #     id = int(input("введите id роли: "))
-            #     role = get_role_by_id(conn, id)
+            if menu_number == 1:
+                id = int(input("введите id роли: "))
+                role = get_role_by_id(session, id)
 
-            #     print_roles_table_header()
+                print_roles_table_header()
 
-            #     if role == None:
-            #         print(f"Роль с id {id} не найдена")
-            #     else:
-            #         print_one_role(role)
+                if role == None:
+                    print(f"Роль с id {id} не найдена")
+                else:
+                    print_one_role(role)
 
         #     elif menu_number == 2:
         #         role_name = input("введите название роли: ")
