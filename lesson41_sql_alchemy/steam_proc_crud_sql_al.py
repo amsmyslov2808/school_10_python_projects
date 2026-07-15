@@ -115,12 +115,26 @@ def add_new_role(session: Session, role: UserRole):
 
 
 def delete_role_by_id(session: Session, id: int):
-    role = get_role_by_id(session, id)
+    find_role = get_role_by_id(session, id)
 
-    if role == None:
+    if find_role == None:
         return False
 
-    session.delete(role)
+    session.delete(find_role)
+    session.commit()
+
+    return True
+
+
+def update_role_by_id(session: Session, role: UserRole) -> bool:
+    find_role = get_role_by_id(session, role.id)
+
+    if find_role == None:
+        return False
+
+    find_role.role_name = role.role_name
+    find_role.description = role.description
+
     session.commit()
 
     return True
@@ -202,20 +216,21 @@ with get_session_local() as session:
                     print("Роль удалена")
                 else:
                     print("Роль не найдена")
-            #     elif menu_number == 4:
+            elif menu_number == 4:
 
-            #         id = int(input("введите id роли: "))
-            #         role_name = input("введите название роли: ")
-            #         description = input("введите описание роли: ")
+                id = int(input("введите id роли: "))
+                role_name = input("введите название роли: ")
+                description = input("введите описание роли: ")
 
-            #         is_update = update_role_by_id(
-            #             conn, UserRole(id=id, role_name=role_name, description=description)
-            #         )
+                is_update = update_role_by_id(
+                    session,
+                    UserRole(id=id, role_name=role_name, description=description),
+                )
 
-            #         if is_update == True:
-            #             print("успешно обновлено")
-            #         else:
-            #             print(f"роль c id {id} не найдена")
+                if is_update == True:
+                    print("успешно обновлено")
+                else:
+                    print(f"роль c id {id} не найдена")
             #     elif menu_number == 5:
             #         id = int(input("введите id пользователя: "))
 
@@ -305,11 +320,12 @@ with get_session_local() as session:
             #             print("успешно обновлено")
             #         else:
             #             print(f"пользователь c id {id} не найден")
-            #     elif menu_number == 0:
-            #         is_run = False
+            elif menu_number == 0:
+                is_run = False
 
             input("\n\n\nдля продолжения нажмите <Enter>\n\n\n")
         except Exception as e:
             print(
                 f"Ошибка в работе с программой. Кратко: {str(e)}. Подробно: {repr(e)}"
             )
+            is_run = False
