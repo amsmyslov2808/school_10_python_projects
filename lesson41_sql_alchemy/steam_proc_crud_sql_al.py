@@ -66,7 +66,7 @@ engine = create_engine(DATABASE_URL, echo=False)
 
 get_session_local = sessionmaker(
     bind=engine,
-    expire_on_commit=False,
+    expire_on_commit=True,
 )
 
 
@@ -78,6 +78,42 @@ def get_all_users_with_roles(session: Session) -> list[User]:
 
 def get_user_by_id(session: Session, id: int) -> User | None:
     return session.get(User, id)
+
+
+def add_new_user(session: Session, user: User):
+    session.add(user)
+    session.commit()
+
+
+def delete_user_by_id(session: Session, id: int):
+    find_user = get_user_by_id(session, id)
+
+    if find_user == None:
+        return False
+
+    session.delete(find_user)
+    session.commit()
+
+    return True
+
+
+def update_user_by_id(session: Session, user: User) -> bool:
+    find_user = get_user_by_id(session, user.id)
+
+    if find_user == None:
+        return False
+
+    find_user.nickname = user.nickname
+    find_user.email = user.email
+    find_user.steam_level = user.steam_level
+    find_user.hours_played = user.hours_played
+    find_user.last_online = user.last_online
+    find_user.is_online = user.is_online
+    find_user.role_id = user.role_id
+
+    session.commit()
+
+    return True
 
 
 def print_users_with_roles(users: list[User]):
@@ -274,84 +310,87 @@ with get_session_local() as session:
                     print(f"Пользователь с id {id} не найден")
                 else:
                     print_one_user(user)
-            #     elif menu_number == 6:
-            #         nickname = input("Никнейм: ")
-            #         email = input("Email: ")
-            #         steam_level = int(input("Уровень Steam: "))
-            #         hours_played = int(input("Часы: "))
+            elif menu_number == 6:
+                nickname = input("Никнейм: ")
+                email = input("Email: ")
+                steam_level = int(input("Уровень Steam: "))
+                hours_played = int(input("Часы: "))
 
-            #         # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
-            #         last_online = datetime.fromisoformat(
-            #             input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
-            #         )
+                # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
+                last_online = datetime.fromisoformat(
+                    input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
+                )
 
-            #         # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
-            #         is_online = bool(
-            #             input(
-            #                 "В сети? (Нажмите Enter если нет, введите любой символ если да): "
-            #             )
-            #         )
-            #         role_id = int(input("ID роли: "))
+                # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
+                is_online = bool(
+                    input(
+                        "В сети? (Нажмите Enter если нет, введите любой символ если да): "
+                    )
+                )
+                role_id = int(input("ID роли: "))
 
-            #         add_new_user(
-            #             conn,
-            #             user=User(
-            #                 nickname=nickname,
-            #                 email=email,
-            #                 steam_level=steam_level,
-            #                 hours_played=hours_played,
-            #                 last_online=last_online,
-            #                 is_online=is_online,
-            #                 role_id=role_id,
-            #             ),
-            #         )
+                add_new_user(
+                    session,
+                    user=User(
+                        nickname=nickname,
+                        email=email,
+                        steam_level=steam_level,
+                        hours_played=hours_played,
+                        last_online=last_online,
+                        is_online=is_online,
+                        role_id=role_id,
+                    ),
+                )
 
-            #         print("успешно добавлено")
-            #     elif menu_number == 7:
-            #         id = int(input("введите id роли: "))
+                print("успешно добавлено")
+            elif menu_number == 7:
+                id = int(input("введите id пользователя: "))
 
-            #         delete_user_by_id(conn, id)
+                is_deleted = delete_user_by_id(session, id)
 
-            #         print("успешно удалено")
-            #     elif menu_number == 8:
-            #         id = int(input("введите id пользователя: "))
+                if is_deleted == True:
+                    print("Пользователь удален")
+                else:
+                    print("Пользователь не найден")
+            elif menu_number == 8:
+                id = int(input("введите id пользователя: "))
 
-            #         nickname = input("Никнейм: ")
-            #         email = input("Email: ")
-            #         steam_level = int(input("Уровень Steam: "))
-            #         hours_played = int(input("Часы: "))
+                nickname = input("Никнейм: ")
+                email = input("Email: ")
+                steam_level = int(input("Уровень Steam: "))
+                hours_played = int(input("Часы: "))
 
-            #         # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
-            #         last_online = datetime.fromisoformat(
-            #             input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
-            #         )
+                # Формат ввода даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС (например, 2026-07-08 14:30:00)
+                last_online = datetime.fromisoformat(
+                    input("Последний онлайн (ГГГГ-ММ-ДД ЧЧ:ММ:СС): ")
+                )
 
-            #         # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
-            #         is_online = bool(
-            #             input(
-            #                 "В сети? (Нажмите Enter если нет, введите любой символ если да): "
-            #             )
-            #         )
-            #         role_id = int(input("ID роли: "))
+                # Ввод True/False (любая непустая строка станет True, пустой Enter станет False)
+                is_online = bool(
+                    input(
+                        "В сети? (Нажмите Enter если нет, введите любой символ если да): "
+                    )
+                )
+                role_id = int(input("ID роли: "))
 
-            #         is_update = update_user_by_id(
-            #             conn,
-            #             user=User(
-            #                 id=id,
-            #                 nickname=nickname,
-            #                 email=email,
-            #                 steam_level=steam_level,
-            #                 hours_played=hours_played,
-            #                 last_online=last_online,
-            #                 is_online=is_online,
-            #                 role_id=role_id,
-            #             ),
-            #         )
+                is_update = update_user_by_id(
+                    session,
+                    user=User(
+                        id=id,
+                        nickname=nickname,
+                        email=email,
+                        steam_level=steam_level,
+                        hours_played=hours_played,
+                        last_online=last_online,
+                        is_online=is_online,
+                        role_id=role_id,
+                    ),
+                )
 
-            #         if is_update == True:
-            #             print("успешно обновлено")
-            #         else:
-            #             print(f"пользователь c id {id} не найден")
+                if is_update == True:
+                    print("успешно обновлено")
+                else:
+                    print(f"пользователь c id {id} не найден")
             elif menu_number == 0:
                 is_run = False
 
