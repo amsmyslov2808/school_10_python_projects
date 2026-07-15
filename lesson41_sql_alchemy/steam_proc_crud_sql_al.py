@@ -32,3 +32,18 @@ class UserRole(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     role_name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(String(500), nullable=False)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = 
+    nickname: Mapped[str] = 
+    email: Mapped[str] = 
+    steam_level: Mapped[int] = 
+    hours_played: Mapped[int] = 
+    last_online: Mapped[datetime] = 
+    is_online: Mapped[bool] = 
+    role_id: Mapped[int] = 
+
+    
