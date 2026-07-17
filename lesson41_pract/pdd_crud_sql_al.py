@@ -1,6 +1,4 @@
 from sqlalchemy import (
-    Boolean,
-    DateTime,
     ForeignKey,
     Integer,
     String,
@@ -57,4 +55,96 @@ get_session_local = sessionmaker(
 )
 
 with get_session_local() as session:
-    print("ok")
+    is_run = True
+
+    while is_run == True:
+        try:
+            road_signs = get_all_road_signs_with_category(session)
+            print_all_road_signs_with_category(road_signs)
+
+            print("\n" + "*" * 50 + "\n")
+
+            sign_categories = get_all_sign_categories(session)
+            print_sign_categories(roles)
+
+            print("\n" + "=" * 100 + "\n")
+
+            print("Меню:")
+            print("1. Вывести знак по id")
+            print("2. Добавить ноый знак")
+            print("3. Удалить знак по id")
+            print("4. Обновить знак по id")
+
+            print("0. Выход")
+
+            menu_number = int(input("выберите пункт меню: "))
+
+            if menu_number == 1:
+                id = int(input("введите id знака: "))
+
+                road_sign = get_road_sign_by_id(session, id)
+
+                print_road_signs_table_header()
+
+                if road_sign == None:
+                    print(f"знак с id {id} не найден")
+                else:
+                    print_one_road_sign(road_sign)
+            elif menu_number == 2:
+                name = input("название: ")
+                description = input("описание: ")
+                category_id = int(input("ИД категории знака: "))
+                image_path = input("url изображения знака: ")
+
+                add_new_road_sign(
+                    session,
+                    road_sign=RoadSign(
+                        name=name,
+                        description=description,
+                        category_id=category_id,
+                        image_path=image_path,
+                    ),
+                )
+
+                print("успешно добавлено")
+            elif menu_number == 3:
+                id = int(input("введите id знака: "))
+
+                is_deleted = delete_road_sign_by_id(session, id)
+
+                if is_deleted == True:
+                    print("успешно удалено")
+                else:
+                    print(f"знак с id {id} не найден")
+            elif menu_number == 4:
+                id = int(input("введите id знака: "))
+
+                name = input("название: ")
+                description = input("описание: ")
+                category_id = int(input("ИД категории знака: "))
+                image_path = input("url изображения знака: ")
+
+                is_updated = update_user_by_id(
+                    session,
+                    road_sign=RoadSign(
+                        id=id,
+                        name=name,
+                        description=description,
+                        category_id=category_id,
+                        image_path=image_path,
+                    ),
+                )
+
+                if is_updated == True:
+                    print("успешно обновлено")
+                else:
+                    print(f"знак с id {id} не найден")
+            elif menu_number == 0:
+                is_run = False
+
+            input("\n\n\nдля продолжения нажмите <Enter>\n\n\n")
+        except Exception as e:
+            print(
+                f"Ошибка в работе с программой. Кратко: {str(e)}. Подробно: {repr(e)}"
+            )
+            is_run = False
