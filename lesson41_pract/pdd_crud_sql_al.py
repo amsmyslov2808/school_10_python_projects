@@ -29,3 +29,32 @@ class SignCategory(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+
+
+class RoadSign(Base):
+    __tablename__ = "road_signs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(String(2000), nullable=False)
+
+    category_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("sign_categories.id", ondelete="RESTRICT", onupdate="RESTRICT"),
+        nullable=False,
+    )
+
+    category: Mapped[SignCategory] = relationship(back_populates="sign_categories")
+
+    image_path: Mapped[str] = mapped_column(String(2000), nullable=False)
+
+
+engine = create_engine(DATABASE_URL, echo=False)
+
+get_session_local = sessionmaker(
+    bind=engine,
+    expire_on_commit=True,
+)
+
+with get_session_local() as session:
+    print("ok")
