@@ -1,0 +1,50 @@
+from telebot import types
+from telebot.states.sync.context import StateContext
+
+from bot_instance import bot
+
+from ui.screen_2_main_menu.keyboards import *
+from ui.screen_2_main_menu.texts import *
+
+from ui.states import TravelStates
+
+
+def show_screen_3_holidays(chat_id: int, state: StateContext):
+    state.set(TravelStates.screen_3_holidays)
+    bot.send_message(
+        chat_id,
+        get_screen_3_holidays_text(),
+        reply_markup=get_screen_3_holidays_keyboard(),
+    )
+
+
+def show_screen_4_city_input(chat_id: int, state: StateContext):
+    state.set(TravelStates.screen_4_city_input)
+    bot.send_message(
+        chat_id,
+        get_screen_4_city_input_text(),
+        reply_markup=get_screen_4_city_input_keyboard(),
+    )
+
+
+def show_screen_7_trips(chat_id: int, tg_user_id: int, page: int, state):
+    state.set(TravelStates.screen_7_trips)
+    bot.send_message(
+        chat_id,
+        get_screen_7_trips_text(),
+        reply_markup=get_screen_7_trips_keyboard(),
+    )
+
+
+@bot.callback_query_handler(state=TravelStates.screen_2_main_menu)
+def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateContext):
+    bot.answer_callback_query(call.id)
+
+    if call.data == "screen_2_show_holidays":
+        show_screen_3_holidays(call.message.chat.id, state)
+
+    elif call.data == "screen_2_input_city":
+        show_screen_4_city_input(call.message.chat.id, state)
+
+    elif call.data == "screen_2_show_trips":
+        show_screen_7_trips(call.message.chat.id, state)

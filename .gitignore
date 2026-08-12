@@ -1,2 +1,6 @@
 /.DS_Store
 .vscode/settings.json
+
+# Python cache на любом уровне вложенности
+__pycache__/
+*.py[cod]
