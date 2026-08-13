@@ -3,7 +3,6 @@ from datetime import date, timedelta
 from api.hollidays_api import get_holidays_from_api
 from models.holliday import Holiday
 
-
 COUNTRY_CODES = ["RU", "US", "GB", "IN", "JP", "BR"]
 
 
@@ -34,8 +33,6 @@ def get_holidays_for_next_30_days() -> list[Holiday]:
         added_holidays.add(holiday_key)
         holidays_for_next_30_days.append(holiday)
 
-    holidays_for_next_30_days.sort(
-        key=lambda holiday: holiday.holiday_date
-    )
+    holidays_for_next_30_days.sort(key=lambda holiday: holiday.holiday_date)
 
     return holidays_for_next_30_days[:5]
