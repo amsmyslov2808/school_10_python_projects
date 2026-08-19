@@ -1,5 +1,13 @@
-"""Модель праздничного дня (заготовка).
+from dataclasses import dataclass
+from datetime import date
 
-Здесь можно описать структуру праздника: название, дату, страну и признак
-выходного дня. Единая модель не даст слоям API и UI зависеть друг от друга.
-"""
+
+@dataclass
+class Holiday:
+    country: str
+    holiday_date: date
+    name: str
+
+    def date_to_str(self):
+        # Telegram удобнее показывать дату в привычном формате день.месяц.год.
+        return self.holiday_date.strftime("%d.%m.%Y")

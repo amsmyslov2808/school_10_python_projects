@@ -1,8 +1,12 @@
 """Текстовые заглушки для разделов, доступных из главного меню."""
 
+from api.hollidays_api import *
+
 
 def get_screen_3_holidays_text():
-    """Возвращает текст экрана с праздниками на ближайшие семь дней."""
+
+    ru_holidays = get_holidays_from_api("RU")
+
     return (
         "Список праздников\n\n"
         "1. День путешественника\n"
