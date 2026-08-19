@@ -1,8 +1,8 @@
-def get_text_for_choose_all_correct():
+def get_screen_5_success_text():
     # Сообщение после подтверждения данных.
     return "Ваши данные успешно сохранены. Для регистрации нового человека вернитесь назад путём ввода команды /start"
 
 
-def get_text_for_choose_mistakes():
+def get_screen_5_cancelled_text():
     # Сообщение после отмены регистрации.
     return "Сохранение ваших данных отменено. Для повторой регистрации вернитесь назад путём ввода команды /start"

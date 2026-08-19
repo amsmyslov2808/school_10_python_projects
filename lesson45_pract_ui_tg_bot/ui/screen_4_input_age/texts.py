@@ -1,12 +1,12 @@
 from telebot.states.sync.context import StateContext
 
 
-def get_error_age_not_int_text_for_screen_4_input_age():
+def get_screen_4_age_not_number_text():
     # Сообщение, если вместо возраста написан не номер.
     return "Ошибка при вводе возраста. Вы ввели не число"
 
 
-def get_error_age_out_of_range_text_for_screen_4_input_age():
+def get_screen_4_age_out_of_range_text():
     # Сообщение, если возраст выходит за допустимые границы.
     return "Ошибка при вводе возраста. Вы ввели возраст меньше 14 или больше 99 лет"
 

@@ -34,14 +34,14 @@ def message_handler_screen_4_input_age(message: types.Message, state: StateConte
     except:
         # Если превратить в число не получилось, сообщаем об ошибке.
         bot.send_message(
-            message.chat.id, get_error_age_not_int_text_for_screen_4_input_age()
+            message.chat.id, get_screen_4_age_not_number_text()
         )
         return
 
     # Проверяем, подходит ли возраст для регистрации.
     if age < 14 or age > 99:
         bot.send_message(
-            message.chat.id, get_error_age_out_of_range_text_for_screen_4_input_age()
+            message.chat.id, get_screen_4_age_out_of_range_text()
         )
         return
 

@@ -32,12 +32,8 @@ def show_screen_4_city_input(chat_id: int, state: StateContext):
     )
 
 
-def show_screen_7_trips(chat_id: int, tg_user_id: int, page: int, state):
-    """Показывает страницу истории поездок пользователя.
-
-    ``tg_user_id`` и ``page`` предусмотрены для будущей загрузки истории
-    конкретного пользователя и постраничного вывода списка.
-    """
+def show_screen_7_trips(chat_id: int, state: StateContext):
+    """Переключает диалог на экран истории поездок."""
 
     state.set(TravelStates.screen_7_trips)
     bot.send_message(
@@ -63,7 +59,5 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
         show_screen_4_city_input(call.message.chat.id, state)
 
     elif call.data == "screen_2_show_trips":
-        # Этот переход в текущей заготовке требует дальнейшей реализации:
-        # show_screen_7_trips также ожидает id пользователя и номер страницы.
         show_screen_7_trips(call.message.chat.id, state)
 """Переходы из главного меню в выбранные пользователем разделы."""

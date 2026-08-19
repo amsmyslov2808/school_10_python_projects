@@ -34,6 +34,23 @@ def get_screen_7_trips_keyboard():
 
     keyboard = telebot.types.InlineKeyboardMarkup()
 
+    for city_number in range(1, 6):
+        keyboard.add(
+            telebot.types.InlineKeyboardButton(
+                f"Выбрать город {city_number}",
+                callback_data=f"screen_7_choose_trip_{city_number}",
+            )
+        )
+
+    keyboard.row(
+        telebot.types.InlineKeyboardButton(
+            "Назад", callback_data="screen_7_previous_page"
+        ),
+        telebot.types.InlineKeyboardButton(
+            "Вперёд", callback_data="screen_7_next_page"
+        ),
+    )
+
     keyboard.add(
         telebot.types.InlineKeyboardButton(
             "В главное меню", callback_data="screen_2_main_menu"

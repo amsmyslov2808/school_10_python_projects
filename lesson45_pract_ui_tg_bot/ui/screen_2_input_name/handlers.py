@@ -29,7 +29,7 @@ def message_handler_screen_2_input_name(message: types.Message, state: StateCont
 
     # Имя должно состоять из 2–25 символов.
     if len(name) < 2 or len(name) > 25:
-        bot.send_message(message.chat.id, get_error_name_text_for_screen_2_input_name())
+        bot.send_message(message.chat.id, get_screen_2_invalid_name_text())
         return
 
     # Сохраняем имя в данных текущего пользователя.

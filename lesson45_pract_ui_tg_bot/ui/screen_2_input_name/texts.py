@@ -3,6 +3,6 @@ def get_text_for_screen_3_choose_gender():
     return "Выберите ваш пол (мужской или женский): "
 
 
-def get_error_name_text_for_screen_2_input_name():
+def get_screen_2_invalid_name_text():
     # Сообщение при неверной длине имени.
     return "Ошибка ввода имени. Длина имени должна быть от 2 до 25 символов"
