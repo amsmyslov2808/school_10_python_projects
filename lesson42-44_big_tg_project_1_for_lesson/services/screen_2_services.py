@@ -7,37 +7,58 @@ from models.holliday import Holiday
 
 # Для каждой из этих стран выполняется отдельный запрос к API праздников.
 COUNTRY_CODES = ["RU", "US", "GB", "IN", "JP", "BR"]
+MAX_HOLIDAYS = 7
 
 
-def get_holidays_for_next_30_days() -> list[Holiday]:
-    """Возвращает до пяти уникальных праздников ближайших 30 дней."""
+def get_holidays_for_next_7_days() -> list[Holiday]:
+    """Возвращает до семи праздников ближайшей недели с чередованием стран."""
 
-    # Границы периода: сегодня и ещё 29 дней, то есть всего 30 дней.
+    # Границы периода: сегодня и ещё шесть дней, то есть всего семь дней.
     today = date.today()
-    last_day = today + timedelta(days=29)
-    all_holidays = []
+    last_day = today + timedelta(days=6)
+    holidays_by_country = {}
 
-    # Собираем праздники всех стран в один список.
+    # Для каждой страны оставляем только праздники ближайшей недели и убираем
+    # возможные повторы в ответе API.
     for country_code in COUNTRY_CODES:
-        all_holidays.extend(get_holidays_from_api(country_code))
+        added_holidays = set()
+        country_holidays = []
+        for holiday in get_holidays_from_api(country_code):
+            if holiday.holiday_date < today or holiday.holiday_date > last_day:
+                continue
 
-    # Здесь будут только подходящие праздники без повторов.
-    holidays_for_next_30_days = []
-    added_holidays = set()
+            holiday_key = (holiday.name.lower(), holiday.holiday_date)
+            if holiday_key in added_holidays:
+                continue
 
-    for holiday in all_holidays:
-        if holiday.holiday_date < today or holiday.holiday_date > last_day:
-            continue
+            added_holidays.add(holiday_key)
+            country_holidays.append(holiday)
 
-        # Одинаковые название и дата означают, что праздник уже был добавлен.
-        holiday_key = (holiday.name.lower(), holiday.holiday_date)
-        if holiday_key in added_holidays:
-            continue
+        # Внутри одной страны сначала показываем ближайшие праздники.
+        holidays_by_country[country_code] = sorted(
+            country_holidays, key=lambda holiday: holiday.holiday_date
+        )
 
-        added_holidays.add(holiday_key)
-        holidays_for_next_30_days.append(holiday)
+    result = []
+    round_number = 0
+    while len(result) < MAX_HOLIDAYS:
+        added_on_this_round = False
 
-    # Сначала показываем самый ближайший праздник.
-    holidays_for_next_30_days.sort(key=lambda holiday: holiday.holiday_date)
-    # Не перегружаем сообщение: выводим максимум пять праздников.
-    return holidays_for_next_30_days[:5]
+        # За один круг берём не более одного праздника от каждой страны.
+        # На следующем круге можно взять её второй праздник, если он есть.
+        for country_code in COUNTRY_CODES:
+            country_holidays = holidays_by_country[country_code]
+            if round_number >= len(country_holidays):
+                continue
+
+            result.append(country_holidays[round_number])
+            added_on_this_round = True
+            if len(result) == MAX_HOLIDAYS:
+                return result
+
+        # Во всех странах закончились подходящие праздники.
+        if not added_on_this_round:
+            break
+        round_number += 1
+
+    return result

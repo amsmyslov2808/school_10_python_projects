@@ -7,7 +7,7 @@ from bot_instance import bot
 
 from ui.screen_2_main_menu.keyboards import *
 from ui.screen_2_main_menu.texts import *
-from services.screen_2_services import get_holidays_for_next_30_days
+from services.screen_2_services import get_holidays_for_next_7_days
 from ui.screen_3_holidays.keyboards import get_screen_3_holidays_keyboard
 from ui.screen_3_holidays.texts import get_screen_3_holidays_text
 
@@ -21,9 +21,8 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
     state.set(TravelStates.screen_3_holidays)
 
     try:
-        # Сервис получает данные из API, отбирает праздники ближайшего месяца
-        # и возвращает не более пяти записей.
-        holidays = get_holidays_for_next_30_days()
+        # Сервис отбирает до семи праздников ближайшей недели, чередуя страны.
+        holidays = get_holidays_for_next_7_days()
         # Превращаем объекты Holiday в один текст Telegram-сообщения.
         output_text = get_screen_3_holidays_text(holidays)
     except (requests.RequestException, ValueError, TypeError, KeyError):

@@ -12,7 +12,7 @@ def get_screen_3_holidays_text(holidays: list[Holiday]):
         )
 
     # В эту строку последовательно добавляется информация о каждом празднике.
-    output_text = "Праздники на ближайшие 30 дней\n\n"
+    output_text = "Праздники на ближайшие 7 дней\n\n"
 
     # enumerate нумерует праздники начиная с 1, а не с 0.
     for holiday_number, holiday in enumerate(holidays, start=1):
