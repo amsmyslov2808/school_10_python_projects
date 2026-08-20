@@ -26,7 +26,7 @@ Session = sessionmaker(bind=engine)
 def create_tables():
     """Создаёт таблицы, если они ещё отсутствуют в базе данных."""
 
-    # Импорт нужен, чтобы SQLAlchemy узнал о модели VisitedCity перед созданием.
-    from models.visited_city import VisitedCity
+    # Импорт нужен, чтобы SQLAlchemy узнал о модели Trips перед созданием.
+    from models.trips import Trips
 
     Base.metadata.create_all(engine)

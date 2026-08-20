@@ -2,15 +2,15 @@ from datetime import datetime
 
 from sqlalchemy import select
 
-from models.visited_city import VisitedCity
+from models.trips import Trips
 from repositories.database import Session
 
 
-def create_trip(tg_user_id: int, city_name: str) -> VisitedCity:
+def create_trip(tg_user_id: int, city_name: str) -> Trips:
     """Сохраняет выбранный город как новую поездку пользователя."""
 
     with Session() as session:
-        trip = VisitedCity(
+        trip = Trips(
             tg_user_id=tg_user_id,
             name=city_name,
             arrival_date=datetime.now(),
@@ -22,24 +22,24 @@ def create_trip(tg_user_id: int, city_name: str) -> VisitedCity:
         return trip
 
 
-def get_trips(tg_user_id: int) -> list[VisitedCity]:
+def get_trips(tg_user_id: int) -> list[Trips]:
     """Возвращает поездки пользователя: новые записи идут первыми."""
 
     with Session() as session:
         query = (
-            select(VisitedCity)
-            .where(VisitedCity.tg_user_id == tg_user_id)
-            .order_by(VisitedCity.arrival_date.desc())
+            select(Trips)
+            .where(Trips.tg_user_id == tg_user_id)
+            .order_by(Trips.arrival_date.desc())
         )
         return list(session.scalars(query))
 
 
-def get_trip(trip_id: int, tg_user_id: int) -> VisitedCity | None:
+def get_trip(trip_id: int, tg_user_id: int) -> Trips | None:
     """Возвращает одну поездку, но только владельцу с указанным Telegram ID."""
 
     with Session() as session:
-        query = select(VisitedCity).where(
-            VisitedCity.id == trip_id, VisitedCity.tg_user_id == tg_user_id
+        query = select(Trips).where(
+            Trips.id == trip_id, Trips.tg_user_id == tg_user_id
         )
         return session.scalar(query)
 
@@ -49,8 +49,8 @@ def update_trip_note(trip_id: int, tg_user_id: int, note: str):
 
     with Session() as session:
         trip = session.scalar(
-            select(VisitedCity).where(
-                VisitedCity.id == trip_id, VisitedCity.tg_user_id == tg_user_id
+            select(Trips).where(
+                Trips.id == trip_id, Trips.tg_user_id == tg_user_id
             )
         )
         if trip is None:

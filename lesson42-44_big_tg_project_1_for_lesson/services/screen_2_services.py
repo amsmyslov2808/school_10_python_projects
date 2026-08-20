@@ -1,3 +1,5 @@
+"""Сервисы экрана 2: подбор праздников для главного меню."""
+
 from datetime import date, timedelta
 
 from api.hollidays_api import get_holidays_from_api

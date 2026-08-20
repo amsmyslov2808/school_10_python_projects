@@ -2,7 +2,7 @@ from telebot import types
 from telebot.states.sync.context import StateContext
 
 from bot_instance import bot
-from services.services import get_city_by_name
+from services.screen_4_services import get_city_by_name
 from ui.states import TravelStates
 
 

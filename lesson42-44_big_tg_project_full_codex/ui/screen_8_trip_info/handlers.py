@@ -2,7 +2,7 @@ from telebot import types
 from telebot.states.sync.context import StateContext
 
 from bot_instance import bot
-from services.services import get_user_trip
+from services.screen_8_services import get_user_trip
 from ui.screen_8_trip_info.keyboards import get_screen_8_trip_info_keyboard
 from ui.screen_8_trip_info.texts import get_screen_8_trip_info_text
 from ui.states import TravelStates

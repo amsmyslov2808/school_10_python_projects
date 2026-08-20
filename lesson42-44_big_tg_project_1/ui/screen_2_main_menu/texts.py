@@ -4,8 +4,10 @@ from api.hollidays_api import *
 
 
 def get_screen_3_holidays_text():
+    """Возвращает временный список праздников для экрана праздников."""
 
-    ru_holidays = get_holidays_from_api("RU")
+    # В дальнейшем вместо заглушки здесь будет использоваться список из API.
+    # ru_holidays = get_holidays_from_api("RU")
 
     return (
         "Список праздников\n\n"

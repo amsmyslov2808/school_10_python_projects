@@ -3,7 +3,7 @@ from telebot import types
 from telebot.states.sync.context import StateContext
 
 from bot_instance import bot
-from services.services import get_selected_city_info
+from services.screen_6_services import get_selected_city_info
 from ui.screen_6_city_info.keyboards import get_screen_6_city_info_keyboard
 from ui.screen_6_city_info.texts import get_screen_6_city_info_text
 from ui.states import TravelStates

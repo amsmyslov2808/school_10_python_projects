@@ -3,7 +3,7 @@ from telebot.states.sync.context import StateContext
 
 from bot_instance import bot
 from models.city import City
-from services.services import get_nearby_cities, save_trip
+from services.screen_5_services import get_nearby_cities, save_trip
 from ui.screen_5_nearby_cities.keyboards import get_screen_5_nearby_cities_keyboard
 from ui.screen_5_nearby_cities.texts import get_screen_5_nearby_cities_text
 from ui.states import TravelStates

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from repositories.database import Base
 
 
-class VisitedCity(Base):
+class Trips(Base):
     """Строка таблицы trips — одна выбранная пользователем поездка."""
 
     __tablename__ = "trips"
