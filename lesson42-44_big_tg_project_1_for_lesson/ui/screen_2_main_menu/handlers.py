@@ -8,8 +8,6 @@ from bot_instance import bot
 from ui.screen_2_main_menu.keyboards import *
 from ui.screen_2_main_menu.texts import *
 from services.screen_2_services import get_holidays_for_next_7_days
-from ui.screen_3_holidays.keyboards import get_screen_3_holidays_keyboard
-from ui.screen_3_holidays.texts import get_screen_3_holidays_text
 
 from ui.states import TravelStates
 

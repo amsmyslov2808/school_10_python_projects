@@ -3,25 +3,23 @@
 from api.hollidays_api import *
 
 
-def get_screen_3_holidays_text():
+def get_screen_3_holidays_text(holidays: list[Holiday]):
     """Возвращает временный список праздников для экрана праздников."""
 
-    # В дальнейшем вместо заглушки здесь будет использоваться список из API.
-    # ru_holidays = get_holidays_from_api("RU")
+    if len(holidays) == 0:
+        return (
+            "К сожалению, ни одного праздника не найдено.\n"
+            "Рекомендуем придумать себе праздник самостоятельно."
+        )
 
-    return (
-        "Список праздников\n\n"
-        "1. День путешественника\n"
-        "Праздник для всех, кто любит открывать новые города.\n\n"
-        "2. День хорошего настроения\n"
-        "Отличный повод отправиться на прогулку.\n\n"
-        "3. День друзей\n"
-        "Можно позвать друзей в небольшое путешествие.\n\n"
-        "4. День новых открытий\n"
-        "Время узнать что-нибудь интересное.\n\n"
-        "5. День выходного дня\n"
-        "Пора выбрать город для следующей поездки."
-    )
+    output_text = "Список праздников:\n\n"
+
+    for i in range(0, len(holidays)):
+        output_text += f"{i+1}. {holidays[i].name}\n"
+        output_text += f"Дата праздника: {holidays[i].date_to_str()}\n"
+        output_text += f"Страна: {holidays[i].country}\n\n"
+
+    return output_text
 
 
 def get_screen_4_city_input_text():

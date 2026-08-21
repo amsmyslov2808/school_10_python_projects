@@ -8,17 +8,30 @@ from ui.screen_2_main_menu.texts import *
 
 from ui.states import TravelStates
 
+from services.screen_2_services import *
+
 
 def show_screen_3_holidays(chat_id: int, state: StateContext):
     """Переводит диалог на экран праздников и отправляет его содержимое."""
 
     # Новое состояние определит, какие обработчики активны после перехода.
     state.set(TravelStates.screen_3_holidays)
-    bot.send_message(
-        chat_id,
-        get_screen_3_holidays_text(),
-        reply_markup=get_screen_3_holidays_keyboard(),
-    )
+
+    try:
+        holidays = get_holidays_for_next_7_days()
+
+        bot.send_message(
+            chat_id,
+            get_screen_3_holidays_text(holidays),
+            reply_markup=get_screen_3_holidays_keyboard(),
+        )
+
+    except:
+        bot.send_message(
+            chat_id,
+            "Ошибка в получении праздников с сервера.\nПопробуйте повторить запрос ещё раз через минуту",
+            reply_markup=get_screen_3_holidays_keyboard(),
+        )
 
 
 def show_screen_4_city_input(chat_id: int, state: StateContext):
@@ -60,4 +73,6 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
 
     elif call.data == "screen_2_show_trips":
         show_screen_7_trips(call.message.chat.id, state)
+
+
 """Переходы из главного меню в выбранные пользователем разделы."""
