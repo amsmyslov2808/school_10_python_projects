@@ -6,6 +6,7 @@ from api.hollidays_api import *
 def get_screen_3_holidays_text(holidays: list[Holiday]):
     """Возвращает временный список праздников для экрана праздников."""
 
+    # Для пустого результата возвращаем отдельное понятное пользователю сообщение.
     if len(holidays) == 0:
         return (
             "К сожалению, ни одного праздника не найдено.\n"
@@ -14,6 +15,7 @@ def get_screen_3_holidays_text(holidays: list[Holiday]):
 
     output_text = "Список праздников:\n\n"
 
+    # Нумеруем праздники и последовательно добавляем их данные в общий текст.
     for i in range(0, len(holidays)):
         output_text += f"{i+1}. {holidays[i].name}\n"
         output_text += f"Дата праздника: {holidays[i].date_to_str()}\n"

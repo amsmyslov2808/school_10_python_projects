@@ -18,8 +18,10 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
     state.set(TravelStates.screen_3_holidays)
 
     try:
+        # Сервис сам запрашивает праздники, фильтрует их и сортирует по дате.
         holidays = get_holidays_for_next_7_days()
 
+        # Преобразуем полученный список в текст и показываем экран праздников.
         bot.send_message(
             chat_id,
             get_screen_3_holidays_text(holidays),
@@ -27,6 +29,8 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
         )
 
     except:
+        # Если внешний API недоступен или ответ не удалось обработать,
+        # оставляем пользователю возможность повторить запрос с этого экрана.
         bot.send_message(
             chat_id,
             "Ошибка в получении праздников с сервера.\nПопробуйте повторить запрос ещё раз через минуту",

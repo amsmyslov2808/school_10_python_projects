@@ -13,10 +13,12 @@ from api.hollidays_api import *
 
 
 def get_holidays_for_next_7_days() -> list[Holiday]:
+    # Получаем отдельные списки праздников для каждой поддерживаемой страны.
     ru_holidays = get_holidays_from_api("RU")
     us_holidays = get_holidays_from_api("US")
     cn_holidays = get_holidays_from_api("CN")
 
+    # Оставляем только праздники, которые наступят в ближайшие семь дней.
     ru_holidays = filter_holidays(ru_holidays)
     us_holidays = filter_holidays(us_holidays)
     cn_holidays = filter_holidays(cn_holidays)
@@ -25,6 +27,8 @@ def get_holidays_for_next_7_days() -> list[Holiday]:
     ru_holidays_index = us_holidays_index = cn_holidays_index = 0
     is_run = True
 
+    # По очереди берём по одному празднику из каждой страны, пока не наберём
+    # семь праздников или пока не закончатся все три исходных списка.
     while is_run == True:
         if (
             ru_holidays_index == len(ru_holidays)
@@ -45,6 +49,7 @@ def get_holidays_for_next_7_days() -> list[Holiday]:
             result_holidays_list.append(cn_holidays[cn_holidays_index])
             cn_holidays_index += 1
 
+    # После объединения располагаем праздники в хронологическом порядке.
     result_holidays_list = sorted(
         result_holidays_list, key=lambda holiday: holiday.holiday_date
     )
@@ -53,11 +58,14 @@ def get_holidays_for_next_7_days() -> list[Holiday]:
 
 
 def filter_holidays(holidays: list[Holiday]) -> list[Holiday]:
+    # Границы периода включаются в выборку: от сегодняшнего дня до шестого
+    # дня после него, то есть всего семь календарных дней.
     today = date.today()
     last_day = today + timedelta(days=6)
 
     filtered_holidays = []
 
+    # Проверяем дату каждого праздника и сохраняем подходящие элементы.
     for current_holiday in holidays:
         if (
             current_holiday.holiday_date >= today
