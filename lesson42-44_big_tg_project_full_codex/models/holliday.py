@@ -13,19 +13,6 @@ class Holiday:
     name: str
     holiday_type: str
 
-    @classmethod
-    def from_dictionary(cls, holiday_data: dict):
-        # API возвращает словарь; здесь превращаем его в объект Holiday.
-        return cls(
-            country=holiday_data.get("country", "Неизвестная страна"),
-            country_code=holiday_data.get("iso", ""),
-            year=int(holiday_data.get("year", 0)),
-            holiday_date=date.fromisoformat(holiday_data["date"]),
-            day=holiday_data.get("day", ""),
-            name=holiday_data.get("name", "Праздник без названия"),
-            holiday_type=holiday_data.get("type", "HOLIDAY"),
-        )
-
     def date_to_str(self):
         # Telegram удобнее показывать дату в привычном формате день.месяц.год.
         return self.holiday_date.strftime("%d.%m.%Y")

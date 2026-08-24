@@ -1,10 +1,13 @@
-def get_screen_7_trips_text(trips, page: int):
-    """Формирует страницу истории поездок."""
+def get_screen_8_trip_info_text(trip):
+    """Формирует подробную информацию об одной поездке."""
 
-    if len(trips) == 0:
-        return "История поездок пока пуста. Выберите город для своей первой поездки."
+    note = trip.note
+    if note == "" or note is None:
+        note = "Заметка о поездке отсутствует."
 
-    output_text = "История поездок\n\n"
-    for trip_number, trip in enumerate(trips, start=1):
-        output_text += f"{trip_number}. {trip.arrival_date.strftime('%d.%m.%Y')} — {trip.name}\n\n"
-    return output_text.strip()
+    trip_date = trip.arrival_date.strftime("%d.%m.%Y %H:%M")
+    return (
+        f"Дата поездки: {trip_date}\n"
+        f"Город: {trip.name}\n\n"
+        f"Заметка:\n{note}"
+    )

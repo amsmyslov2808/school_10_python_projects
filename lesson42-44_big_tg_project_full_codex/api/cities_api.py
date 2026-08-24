@@ -2,90 +2,127 @@ import requests
 
 from models.city import City
 
-# Учётная запись GeoNames для учебного проекта.
 GEONAMES_USERNAME = "a.m.smyslov2808"
 GEONAMES_SEARCH_URL = "https://secure.geonames.org/searchJSON"
 GEONAMES_NEARBY_URL = "https://secure.geonames.org/findNearbyPlaceNameJSON"
 WIKIPEDIA_API_URL = "https://ru.wikipedia.org/w/api.php"
-# Википедия просит представлять приложение через понятный User-Agent.
-WIKIPEDIA_HEADERS = {"User-Agent": "TravelHunterSchoolBot/1.0 (educational project)"}
-# В бесплатном тарифе GeoNames максимальный радиус этого endpoint — 300 км.
-NEARBY_CITIES_RADIUS = 300
 
 
 def find_city(city_name: str) -> City | None:
     """Ищет город по названию и возвращает его координаты."""
 
+    # Отправляем название города в GeoNames.
     response = requests.get(
         GEONAMES_SEARCH_URL,
-        params={"q": city_name, "maxRows": 1, "featureClass": "P", "username": GEONAMES_USERNAME},
+        params={
+            "q": city_name,
+            "maxRows": 1,
+            "featureClass": "P",
+            "lang": "ru",
+            "username": GEONAMES_USERNAME,
+        },
         timeout=10,
     )
+
+    # Если API вернул ошибку, программа создаст исключение.
     response.raise_for_status()
-    cities = response.json().get("geonames", [])
-    if len(cities) == 0:
+
+    # В ключе geonames находится список найденных городов.
+    cities_data = response.json()["geonames"]
+    if len(cities_data) == 0:
         return None
 
-    city_data = cities[0]
+    # Берём первый город и превращаем словарь API в объект City.
+    city_data = cities_data[0]
     return City(
         name=city_data["name"],
         latitude=float(city_data["lat"]),
         longitude=float(city_data["lng"]),
-        country=city_data.get("countryName", ""),
+        country=city_data["countryName"],
     )
 
 
 def find_nearby_cities(city: City) -> list[City]:
-    """Ищет до пяти ближайших городов в доступном радиусе GeoNames."""
+    """Ищет ближайшие крупные города в доступном радиусе GeoNames."""
 
+    # Просим API найти населённые пункты в радиусе 300 километров.
     response = requests.get(
         GEONAMES_NEARBY_URL,
         params={
             "lat": city.latitude,
             "lng": city.longitude,
-            "radius": NEARBY_CITIES_RADIUS,
-            "maxRows": 20,
+            "radius": 300,
+            "maxRows": 500,
+            "cities": "cities15000",
+            "lang": "ru",
             "username": GEONAMES_USERNAME,
         },
         timeout=10,
     )
     response.raise_for_status()
-    cities = []
-    for city_data in response.json().get("geonames", []):
-        if city_data.get("name", "").lower() == city.name.lower():
+
+    cities_data = response.json()["geonames"]
+    output_cities = []
+
+    for current_city in cities_data:
+        distance = float(current_city["distance"])
+        population = int(current_city["population"])
+
+        # Отбрасываем исходный город, районы и маленькие города-спутники.
+        if current_city["name"].lower() == city.name.lower():
             continue
-        cities.append(
+        if distance < 50:
+            continue
+        if population < 250000:
+            continue
+
+        output_cities.append(
             City(
-                name=city_data["name"],
-                latitude=float(city_data["lat"]),
-                longitude=float(city_data["lng"]),
-                country=city_data.get("countryName", ""),
-                distance=float(city_data.get("distance", 0)),
+                name=current_city["name"],
+                latitude=float(current_city["lat"]),
+                longitude=float(current_city["lng"]),
+                country=current_city["countryName"],
+                distance=distance,
             )
         )
-    return cities[:5]
+
+        # Для экрана бота достаточно семи городов.
+        if len(output_cities) == 7:
+            break
+
+    return output_cities
 
 
 def get_city_info(city_name: str) -> tuple[str, str | None]:
     """Получает краткое описание города и ссылку на его изображение из Википедии."""
 
+    # formatversion=2 заставляет Wikipedia вернуть страницы обычным списком.
     response = requests.get(
         WIKIPEDIA_API_URL,
         params={
             "action": "query",
             "format": "json",
+            "formatversion": 2,
             "prop": "extracts|pageimages",
             "exintro": 1,
             "explaintext": 1,
             "piprop": "original",
             "titles": city_name,
         },
-        headers=WIKIPEDIA_HEADERS,
+        headers={"User-Agent": "TravelHunterSchoolBot/1.0 (educational project)"},
         timeout=10,
     )
     response.raise_for_status()
-    pages = response.json().get("query", {}).get("pages", {})
-    page = next(iter(pages.values()), {})
-    description = page.get("extract", "")
-    image_url = page.get("original", {}).get("source")
+
+    pages_data = response.json()["query"]["pages"]
+    if len(pages_data) == 0:
+        return "", None
+
+    page_data = pages_data[0]
+    description = page_data.get("extract", "")
+
+    image_url = None
+    if "original" in page_data:
+        image_url = page_data["original"]["source"]
+
     return description, image_url

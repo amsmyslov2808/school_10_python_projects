@@ -8,8 +8,7 @@ from bot_instance import bot
 from ui.screen_2_main_menu.keyboards import *
 from ui.screen_2_main_menu.texts import *
 from services.screen_2_services import get_holidays_for_next_30_days
-from ui.screen_3_holidays.keyboards import get_screen_3_holidays_keyboard
-from ui.screen_3_holidays.texts import get_screen_3_holidays_text
+from services.screen_7_services import get_user_trips
 
 from ui.states import TravelStates
 
@@ -52,12 +51,38 @@ def show_screen_4_city_input(chat_id: int, state: StateContext):
     )
 
 
-def show_screen_7_trips(chat_id: int, tg_user_id: int, state: StateContext):
-    """Переключает диалог на экран истории поездок."""
+def show_screen_7_trips(
+    chat_id: int, tg_user_id: int, page: int, state: StateContext
+):
+    """Получает историю поездок и показывает экран 7."""
 
-    from ui.screen_7_trips.handlers import show_screen_7_trips as show_trips_history
+    try:
+        all_trips = get_user_trips(tg_user_id)
+    except:
+        bot.send_message(
+            chat_id,
+            "Не удалось загрузить историю поездок. Попробуйте ещё раз позже.",
+        )
+        return
 
-    show_trips_history(chat_id, tg_user_id, 0, state)
+    first_trip = page * 5
+    trips = all_trips[first_trip:first_trip + 5]
+
+    trip_ids = []
+    for current_trip in trips:
+        trip_ids.append(current_trip.id)
+
+    state.add_data(current_trips=trip_ids, current_trips_page=page)
+    state.set(TravelStates.screen_7_trips)
+
+    has_next_page = len(all_trips) > first_trip + 5
+    bot.send_message(
+        chat_id,
+        get_screen_7_trips_text(trips),
+        reply_markup=get_screen_7_trips_keyboard(
+            len(trips), page, has_next_page
+        ),
+    )
 
 
 @bot.callback_query_handler(state=TravelStates.screen_2_main_menu)
@@ -76,7 +101,7 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
         show_screen_4_city_input(call.message.chat.id, state)
 
     elif call.data == "screen_2_show_trips":
-        show_screen_7_trips(call.message.chat.id, call.from_user.id, state)
+        show_screen_7_trips(call.message.chat.id, call.from_user.id, 0, state)
 
 
 @bot.message_handler(state=TravelStates.screen_2_main_menu, content_types=["text"])
