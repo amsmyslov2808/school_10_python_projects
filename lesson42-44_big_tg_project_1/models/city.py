@@ -1,5 +1,11 @@
-"""Модель города (заготовка).
+from dataclasses import dataclass
 
-Будущая модель может хранить название города, страну, координаты и другие
-данные, общие для API, бизнес-логики и пользовательского интерфейса.
-"""
+
+@dataclass
+class City:
+    """Город, полученный из GeoNames."""
+
+    name: str
+    latitude: float
+    longitude: float
+    distance: float = 0

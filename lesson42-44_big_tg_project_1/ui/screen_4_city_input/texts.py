@@ -1,13 +1,16 @@
 """Тексты результата поиска ближайших городов."""
 
+from models.city import City
 
-def get_screen_5_nearby_cities_text():
-    """Возвращает временный текст экрана со списком ближайших городов."""
-    return (
-        "Список городов\n\n"
-        "1. Бердск — 37 км\n\n"
-        "2. Искитим — 58 км\n\n"
-        "3. Тогучин — 110 км\n\n"
-        "4. Болотное — 126 км\n\n"
-        "5. Томск — 265 км"
-    )
+
+def get_screen_5_nearby_cities_text(start_city: City, nearby_cities: list[City]):
+    output_text = f"Список городов куда можно съездить из города {start_city.name}\n\n"
+
+    city_number = 0
+    for nearby_city in nearby_cities:
+        city_number += 1
+        output_text += (
+            f"{city_number}. {nearby_city.name} — {nearby_city.distance:.0f} км\n\n"
+        )
+
+    return output_text

@@ -26,7 +26,7 @@ def get_screen_3_holidays_text(holidays: list[Holiday]):
 
 def get_screen_4_city_input_text():
     """Возвращает приглашение перейти к вводу исходного города."""
-    return "Введите название города, в котором Вы сейчас находитесь."
+    return "Введите название города, из которого Вы хотите отправиться в путешествие на выходные."
 
 
 def get_screen_7_trips_text():

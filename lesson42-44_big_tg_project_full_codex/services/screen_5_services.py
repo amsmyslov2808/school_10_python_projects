@@ -1,6 +1,6 @@
 """Сервисы экрана 5: ближайшие города и сохранение выбранной поездки."""
 
-from api.cities_api import find_nearby_cities
+from api.geonames_api import find_nearby_cities
 from models.city import City
 from repositories.trips_repository import create_trip
 
