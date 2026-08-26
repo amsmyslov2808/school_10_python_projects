@@ -1,3 +1,5 @@
+"""Обработчики главного меню и функции перехода к его разделам."""
+
 from telebot import types
 from telebot.states.sync.context import StateContext
 
@@ -12,7 +14,11 @@ from services.screen_2_services import *
 
 
 def show_screen_3_holidays(chat_id: int, state: StateContext):
-    """Переводит диалог на экран праздников и отправляет его содержимое."""
+    """Переводит диалог на экран праздников и отправляет его содержимое.
+
+    При сбое внешнего сервиса остаётся то же состояние экрана: пользователь
+    увидит клавиатуру и сможет вернуться в главное меню.
+    """
 
     # Новое состояние определит, какие обработчики активны после перехода.
     state.set(TravelStates.screen_3_holidays)
@@ -41,6 +47,7 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
 def show_screen_4_city_input(chat_id: int, state: StateContext):
     """Показывает экран, на котором бот ожидает название города."""
 
+    # В этом состоянии текстовые сообщения принимает обработчик ввода города.
     state.set(TravelStates.screen_4_city_input)
     bot.send_message(
         chat_id,
@@ -52,6 +59,7 @@ def show_screen_4_city_input(chat_id: int, state: StateContext):
 def show_screen_7_trips(chat_id: int, state: StateContext):
     """Переключает диалог на экран истории поездок."""
 
+    # Экран пока использует демонстрационные данные из texts.py.
     state.set(TravelStates.screen_7_trips)
     bot.send_message(
         chat_id,
@@ -62,7 +70,11 @@ def show_screen_7_trips(chat_id: int, state: StateContext):
 
 @bot.callback_query_handler(state=TravelStates.screen_2_main_menu)
 def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateContext):
-    """Обрабатывает нажатия inline-кнопок на экране главного меню."""
+    """Направляет нажатие кнопки главного меню на нужный экран.
+
+    Декоратор ограничивает обработчик состоянием ``screen_2_main_menu``, поэтому
+    callback-запросы других экранов сюда не попадут.
+    """
 
     # Подтверждаем Telegram получение callback-запроса, чтобы индикатор загрузки
     # на нажатой кнопке исчез у пользователя.
@@ -77,6 +89,3 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
 
     elif call.data == "screen_2_show_trips":
         show_screen_7_trips(call.message.chat.id, state)
-
-
-"""Переходы из главного меню в выбранные пользователем разделы."""

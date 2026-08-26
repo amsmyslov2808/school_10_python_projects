@@ -1,8 +1,8 @@
-"""Бизнес-логика приложения TravelHunter (заготовка).
+"""Бизнес-логика раздела праздников приложения TravelHunter.
 
-Сервисы должны связывать UI, внешние API и репозитории: например, получать
-координаты введённого города, подбирать ближайшие города и сохранять поездку.
-Так обработчики Telegram останутся короткими и будут отвечать только за диалог.
+Модуль получает данные сразу для нескольких стран, выбирает события ближайшей
+недели и готовит единый список для Telegram-интерфейса. HTTP-запросы при этом
+остаются в API-слое, а обработчики не содержат бизнес-правил фильтрации.
 """
 
 from models.holliday import Holiday
@@ -13,6 +13,12 @@ from api.hollidays_api import *
 
 
 def get_holidays_for_next_7_days() -> list[Holiday]:
+    """Собирает до семи праздников трёх стран на ближайшую неделю.
+
+    До итоговой сортировки списки объединяются по кругу: Россия, США, Китай.
+    Такой алгоритм не позволяет одной стране сразу занять все семь позиций.
+    """
+
     # Получаем отдельные списки праздников для каждой поддерживаемой страны.
     ru_holidays = get_holidays_from_api("RU")
     us_holidays = get_holidays_from_api("US")
@@ -23,6 +29,8 @@ def get_holidays_for_next_7_days() -> list[Holiday]:
     us_holidays = filter_holidays(us_holidays)
     cn_holidays = filter_holidays(cn_holidays)
 
+    # Для каждого списка хранится отдельный индекс следующего ещё не взятого
+    # праздника. Несколько присваиваний справа задают всем индексам значение 0.
     result_holidays_list = []
     ru_holidays_index = us_holidays_index = cn_holidays_index = 0
     is_run = True
@@ -30,6 +38,7 @@ def get_holidays_for_next_7_days() -> list[Holiday]:
     # По очереди берём по одному празднику из каждой страны, пока не наберём
     # семь праздников или пока не закончатся все три исходных списка.
     while is_run == True:
+        # Цикл завершается, когда исчерпаны все источники либо набран лимит.
         if (
             ru_holidays_index == len(ru_holidays)
             and us_holidays_index == len(us_holidays)
@@ -58,6 +67,8 @@ def get_holidays_for_next_7_days() -> list[Holiday]:
 
 
 def filter_holidays(holidays: list[Holiday]) -> list[Holiday]:
+    """Оставляет праздники с датой в пределах семи дней, включая сегодня."""
+
     # Границы периода включаются в выборку: от сегодняшнего дня до шестого
     # дня после него, то есть всего семь календарных дней.
     today = date.today()
@@ -73,4 +84,6 @@ def filter_holidays(holidays: list[Holiday]) -> list[Holiday]:
         ):
             filtered_holidays.append(current_holiday)
 
+    # Исходный порядок элементов сохраняется; общая сортировка выполняется
+    # после объединения результатов разных стран.
     return filtered_holidays

@@ -12,11 +12,13 @@ import ui.screen_1_start.handlers
 import ui.screen_2_main_menu.handlers
 import ui.screen_4_city_input.handlers
 
+# После импортов настраиваем поддержку конечного автомата состояний.
 # StateFilter позволяет ограничивать обработчики текущим состоянием диалога.
 bot.add_custom_filter(custom_filters.StateFilter(bot))
 # Middleware создаёт и передаёт аргумент StateContext в функции-обработчики.
 bot.setup_middleware(StateMiddleware(bot))
 
+# Сообщение выводится в консоль разработчика, а не отправляется в Telegram.
 print("TravelHunter запущен")
 # Бот постоянно запрашивает у Telegram новые события. При временных ошибках
 # infinity_polling продолжает работу и повторяет подключение.

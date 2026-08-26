@@ -1,3 +1,5 @@
+"""Обработчики ввода исходного города и показа ближайших вариантов."""
+
 from telebot import types
 from telebot.states.sync.context import StateContext
 
@@ -10,20 +12,31 @@ from services.screen_4_services import *
 
 
 def show_screen_5_nearby_cities(chat_id: int, state: StateContext):
-    """Переключает состояние и показывает экран ближайших городов."""
+    """Загружает и показывает города рядом с ранее выбранным городом.
 
+    Исходный город берётся из временных данных состояния, куда его записал
+    ``message_screen_4_city_input_handler``. Найденный список также сохраняется:
+    он понадобится будущему обработчику выбора конкретного города.
+    """
+
+    # Сначала меняем состояние, чтобы последующие действия пользователя
+    # относились уже к экрану списка ближайших городов.
     state.set(TravelStates.screen_5_nearby_cities)
 
+    # Контекстный менеджер даёт доступ к данным текущего пользователя/чата.
     with state.data() as data:
         start_city = data["start_city"]
 
     try:
-        # Сервис сам запрашивает праздники, фильтрует их и сортирует по дате.
+        # Сервис передаёт координаты исходного города в GeoNames и возвращает
+        # не более пяти подходящих вариантов, отсортированных по расстоянию.
         nearby_cities = get_nearby_cities(start_city)
 
+        # Сохраняем именно объекты City, чтобы при выборе кнопки не выполнять
+        # повторный запрос и не восстанавливать данные из текста сообщения.
         state.add_data(nearby_cities=nearby_cities)
 
-        # Преобразуем полученный список в текст и показываем экран праздников.
+        # Количество найденных городов определяет число кнопок клавиатуры.
         bot.send_message(
             chat_id,
             get_screen_5_nearby_cities_text(start_city, nearby_cities),
@@ -41,12 +54,18 @@ def show_screen_5_nearby_cities(chat_id: int, state: StateContext):
 
 @bot.message_handler(state=TravelStates.screen_4_city_input, content_types=["text"])
 def message_screen_4_city_input_handler(message: types.Message, state: StateContext):
-    """Получает текст, введённый пользователем в качестве названия города."""
+    """Проверяет введённое название и запускает поиск ближайших городов.
 
-    # message.text содержит текст Telegram-сообщения. Переменная подготовлена
-    # для будущего поиска города через API или слой services.
+    Обработчик активен только на четвёртом экране и только для текстовых
+    сообщений. Некорректный ввод не меняет состояние, поэтому пользователь
+    может сразу отправить другое название.
+    """
+
+    # Убираем пробелы по краям, чтобы строка из одних пробелов считалась пустой,
+    # а случайный пробел после названия не ухудшал поиск.
     start_city_name = message.text.strip()
 
+    # Пустой запрос не отправляем во внешний API.
     if start_city_name == "":
         bot.send_message(
             message.chat.id,
@@ -55,9 +74,10 @@ def message_screen_4_city_input_handler(message: types.Message, state: StateCont
         return
 
     try:
-        # Сервис сам запрашивает праздники, фильтрует их и сортирует по дате.
+        # Получаем нормализованное название и координаты найденного города.
         start_city = get_city_by_name(start_city_name)
 
+        # None является штатным результатом, когда GeoNames ничего не нашёл.
         if start_city == None:
             bot.send_message(
                 message.chat.id,
@@ -65,6 +85,8 @@ def message_screen_4_city_input_handler(message: types.Message, state: StateCont
             )
             return
 
+        # Временные данные FSM принадлежат конкретному диалогу и будут доступны
+        # функции следующего экрана.
         state.add_data(start_city=start_city)
 
         show_screen_5_nearby_cities(message.chat.id, state)

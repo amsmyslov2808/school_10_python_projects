@@ -13,7 +13,12 @@ API_NINJAS_HOLIDAYS_URL = "https://api.api-ninjas.com/v2/holidays"
 
 
 def get_holidays_from_api(country_code: str) -> list[Holiday]:
-    """Запрашивает праздники страны и преобразует ответ API в модели Holiday."""
+    """Запрашивает праздники страны и преобразует ответ в модели ``Holiday``.
+
+    ``country_code`` должен содержать двухбуквенный код страны, например
+    ``RU``, ``US`` или ``CN``. Возможные сетевые ошибки передаются вызывающему
+    коду и обрабатываются на уровне Telegram-интерфейса.
+    """
 
     # Параметр country задаёт страну в формате ISO 3166-1 alpha-2, например RU.
     # timeout не позволяет боту надолго зависнуть при проблемах с сетью.
@@ -29,6 +34,8 @@ def get_holidays_from_api(country_code: str) -> list[Holiday]:
 
     # API возвращает список словарей; каждому словарю соответствует один праздник.
     holidays_data = response.json()
+    # Список моделей является внутренним форматом приложения: далее сервисы и
+    # UI работают с атрибутами Holiday, не обращаясь к ключам JSON напрямую.
     output_holidays = []
 
     for current_holiday in holidays_data:
@@ -41,4 +48,6 @@ def get_holidays_from_api(country_code: str) -> list[Holiday]:
             )
         )
 
+    # Порядок пока совпадает с порядком элементов в ответе API. Нужную
+    # фильтрацию и сортировку выполняет сервисный слой.
     return output_holidays

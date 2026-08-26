@@ -1,3 +1,5 @@
+"""Обработчик команды ``/start`` и функция показа главного меню."""
+
 from telebot import types
 from telebot.states.sync.context import StateContext
 
@@ -8,7 +10,11 @@ from ui.states import TravelStates
 
 
 def show_screen_2_main_menu(chat_id: int, state: StateContext):
-    """Переключает диалог на главное меню и отправляет его содержимое."""
+    """Переключает диалог на главное меню и отправляет его содержимое.
+
+    Функция вынесена отдельно, потому что главное меню нужно показывать не
+    только после ``/start``, но и после возврата с других экранов.
+    """
 
     # Следующие нажатия кнопок должен принимать обработчик главного меню.
     state.set(TravelStates.screen_2_main_menu)
@@ -28,6 +34,3 @@ def command_screen_1_start_handler(message: types.Message, state: StateContext):
     state.delete()
     # Показываем главное меню после очистки предыдущего сценария.
     show_screen_2_main_menu(message.chat.id, state)
-
-
-"""Обработчик команды /start и перехода в главное меню."""

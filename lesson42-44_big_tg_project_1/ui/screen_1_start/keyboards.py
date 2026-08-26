@@ -3,7 +3,7 @@
 import telebot
 
 
-def get_screen_2_main_menu_keyboard():
+def get_screen_2_main_menu_keyboard() -> telebot.types.InlineKeyboardMarkup:
     """Создаёт клавиатуру с тремя основными разделами приложения."""
 
     # Inline-клавиатура отображается непосредственно под сообщением бота.
