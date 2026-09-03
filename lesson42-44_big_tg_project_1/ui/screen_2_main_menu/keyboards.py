@@ -50,7 +50,7 @@ def get_screen_7_visited_cities_keyboard() -> telebot.types.InlineKeyboardMarkup
         keyboard.add(
             telebot.types.InlineKeyboardButton(
                 f"Выбрать город {city_number}",
-                callback_data=f"screen_7_choose_trip_{city_number}",
+                callback_data=f"screen_7_choose_visited_city_{city_number}",
             )
         )
 

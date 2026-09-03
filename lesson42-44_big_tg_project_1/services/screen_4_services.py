@@ -16,6 +16,6 @@ def get_city_by_name(city_name: str) -> City | None:
 
 
 def get_nearby_cities(city: City) -> list[City]:
-    """Возвращает подготовленный API список ближайших крупных городов."""
+    """Возвращает подготовленный список ближайших крупных городов из API."""
 
     return find_nearby_cities(city)

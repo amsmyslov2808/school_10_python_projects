@@ -6,11 +6,11 @@
 Здесь же находится операция получения истории поездок из репозитория.
 """
 
-from models.holliday import Holiday
+from models.holiday import Holiday
 
 from datetime import date, timedelta
 
-from api.hollidays_api import *
+from api.holidays_api import *
 
 from repositories.cities_repository import *
 

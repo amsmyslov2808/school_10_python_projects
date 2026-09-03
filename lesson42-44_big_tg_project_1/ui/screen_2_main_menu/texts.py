@@ -1,6 +1,6 @@
 """Формирование текстов для разделов, доступных из главного меню."""
 
-from api.hollidays_api import *
+from api.holidays_api import *
 from models.visited_city import VisitedCity
 
 

@@ -19,12 +19,14 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
     При сбое внешнего сервиса состояние экрана остаётся прежним.
     """
 
-    # Новое состояние определит, какие обработчики активны после перехода.
-    state.set(TravelStates.screen_3_holidays)
-
     try:
         # Сервис сам запрашивает праздники, фильтрует их и сортирует по дате.
         holidays = get_holidays_for_next_7_days()
+
+        # Переходим на новый экран только после успешного ответа внешнего API.
+        # При ошибке пользователь останется в главном меню и сможет повторить
+        # запрос той же кнопкой.
+        state.set(TravelStates.screen_3_holidays)
 
         # Преобразуем полученный список в текст и показываем экран праздников.
         bot.send_message(
@@ -35,8 +37,7 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
         )
 
     except:
-        # Сообщаем пользователю, если внешний API недоступен или его ответ
-        # не удалось обработать.
+        # Сообщаем пользователю, если не удалось получить или показать праздники.
         bot.send_message(
             chat_id,
             "Ошибка в получении праздников с сервера.\nПопробуйте повторить запрос ещё раз через минуту",
@@ -58,10 +59,14 @@ def show_screen_4_city_input(chat_id: int, state: StateContext):
     )
 
 
-def show_screen_7_visited_cities(chat_id: int, tg_user_id: int, state: StateContext):
+def show_screen_7_visited_cities(chat_id: int, state: StateContext):
     """Загружает из базы и показывает историю поездок пользователя."""
 
     try:
+        # Telegram ID был сохранён обработчиком кнопки в данных состояния.
+        with state.data() as data:
+            tg_user_id = data["tg_user_id"]
+
         # Telegram ID ограничивает выборку поездками текущего пользователя.
         visited_cities = get_all_user_visited_cities(tg_user_id)
 
@@ -73,7 +78,8 @@ def show_screen_7_visited_cities(chat_id: int, tg_user_id: int, state: StateCont
             get_screen_7_visited_cities_text(visited_cities),
         )
     except:
-        # Ошибки подключения и чтения БД не должны завершать работу бота.
+        # Ошибка чтения данных состояния, обращения к БД или отправки сообщения
+        # не должна завершать работу бота.
         bot.send_message(
             chat_id,
             "Ошибка работы с базой данных. Не удалось загрузить историю поездок. Попробуйте ещё раз позже.",
@@ -88,8 +94,8 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
     callback-запросы других экранов сюда не попадут.
     """
 
-    # Подтверждаем Telegram получение callback-запроса, чтобы индикатор загрузки
-    # на нажатой кнопке исчез у пользователя.
+    # Подтверждаем получение callback-запроса серверу Telegram, чтобы индикатор
+    # загрузки на нажатой кнопке исчез у пользователя.
     bot.answer_callback_query(call.id)
 
     # Значение call.data совпадает с callback_data соответствующей кнопки.
@@ -99,5 +105,8 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
     elif call.data == "screen_2_input_city":
         show_screen_4_city_input(call.message.chat.id, state)
 
-    elif call.data == "screen_2_show_visited_cities":
-        show_screen_7_visited_cities(call.message.chat.id, call.from_user.id, state)
+    elif call.data == "screen_7_visited_cities":
+        # Сохраняем Telegram ID в FSM, чтобы следующий экран получил его через
+        # контекст состояния, а не через дополнительный параметр функции.
+        state.add_data(tg_user_id=call.from_user.id)
+        show_screen_7_visited_cities(call.message.chat.id, state)

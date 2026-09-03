@@ -25,7 +25,7 @@ def get_screen_2_main_menu_keyboard() -> telebot.types.InlineKeyboardMarkup:
     )
     keyboard.add(
         telebot.types.InlineKeyboardButton(
-            "История поездок", callback_data="screen_2_show_visited_cities"
+            "История поездок", callback_data="screen_7_visited_cities"
         )
     )
     # Возвращаем готовую разметку для передачи в bot.send_message.

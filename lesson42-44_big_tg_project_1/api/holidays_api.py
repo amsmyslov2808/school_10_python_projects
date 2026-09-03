@@ -4,7 +4,7 @@ from datetime import date
 
 import requests
 
-from models.holliday import Holiday
+from models.holiday import Holiday
 
 # Ключ авторизует запросы к внешнему API. В рабочем приложении его следует
 # хранить в переменной окружения, а не в исходном коде.
