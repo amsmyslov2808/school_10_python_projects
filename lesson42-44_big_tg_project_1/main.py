@@ -11,6 +11,7 @@ from bot_instance import bot
 import ui.screen_1_start.handlers
 import ui.screen_2_main_menu.handlers
 import ui.screen_4_city_input.handlers
+import ui.screen_5_nearby_cities.handlers
 
 # После импортов настраиваем поддержку конечного автомата состояний.
 # StateFilter позволяет ограничивать обработчики текущим состоянием диалога.

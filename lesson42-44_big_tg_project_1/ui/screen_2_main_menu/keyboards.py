@@ -1,10 +1,13 @@
-"""Клавиатуры экранов, открываемых из главного меню."""
+"""Заготовки клавиатур для экранов, открываемых из главного меню."""
 
 import telebot
 
 
 def get_screen_3_holidays_keyboard() -> telebot.types.InlineKeyboardMarkup:
-    """Создаёт кнопку возврата со страницы праздников в главное меню."""
+    """Создаёт кнопку возврата со страницы праздников в главное меню.
+
+    Клавиатура пока не выводится: обработчик возврата ещё не реализован.
+    """
 
     # Одинаковый callback_data позволит общему обработчику возврата открыть
     # главное меню, когда он будет добавлен в проект.
@@ -19,7 +22,10 @@ def get_screen_3_holidays_keyboard() -> telebot.types.InlineKeyboardMarkup:
 
 
 def get_screen_4_city_input_keyboard() -> telebot.types.InlineKeyboardMarkup:
-    """Создаёт кнопку возврата с экрана ввода города."""
+    """Создаёт кнопку возврата с экрана ввода города.
+
+    Клавиатура пока не выводится: обработчик возврата ещё не реализован.
+    """
 
     keyboard = telebot.types.InlineKeyboardMarkup()
 
@@ -31,12 +37,15 @@ def get_screen_4_city_input_keyboard() -> telebot.types.InlineKeyboardMarkup:
     return keyboard
 
 
-def get_screen_7_trips_keyboard() -> telebot.types.InlineKeyboardMarkup:
-    """Создаёт кнопку возврата со страницы истории поездок."""
+def get_screen_7_visited_cities_keyboard() -> telebot.types.InlineKeyboardMarkup:
+    """Создаёт заготовку клавиатуры для экрана истории поездок.
+
+    Клавиатура пока не выводится, поскольку её кнопки ещё не обрабатываются.
+    """
 
     keyboard = telebot.types.InlineKeyboardMarkup()
 
-    # Пять кнопок соответствуют пяти строкам демонстрационной истории.
+    # Заготовка рассчитана на страницу из пяти записей истории.
     for city_number in range(1, 6):
         keyboard.add(
             telebot.types.InlineKeyboardButton(

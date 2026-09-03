@@ -14,7 +14,8 @@ def get_screen_2_main_menu_keyboard() -> telebot.types.InlineKeyboardMarkup:
         telebot.types.InlineKeyboardButton(
             # callback_data не показывается пользователю: это служебное значение,
             # по которому обработчик понимает, какая кнопка была нажата.
-            "Праздники на 7 дней", callback_data="screen_2_show_holidays"
+            "Праздники на 7 дней",
+            callback_data="screen_2_show_holidays",
         )
     )
     keyboard.add(
@@ -24,7 +25,7 @@ def get_screen_2_main_menu_keyboard() -> telebot.types.InlineKeyboardMarkup:
     )
     keyboard.add(
         telebot.types.InlineKeyboardButton(
-            "История поездок", callback_data="screen_2_show_trips"
+            "История поездок", callback_data="screen_2_show_visited_cities"
         )
     )
     # Возвращаем готовую разметку для передачи в bot.send_message.

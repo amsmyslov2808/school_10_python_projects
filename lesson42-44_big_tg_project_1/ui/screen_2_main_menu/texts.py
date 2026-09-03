@@ -1,6 +1,7 @@
 """Формирование текстов для разделов, доступных из главного меню."""
 
 from api.hollidays_api import *
+from models.visited_city import VisitedCity
 
 
 def get_screen_3_holidays_text(holidays: list[Holiday]) -> str:
@@ -31,17 +32,19 @@ def get_screen_4_city_input_text() -> str:
     return "Введите название города, из которого Вы хотите отправиться в путешествие на выходные."
 
 
-def get_screen_7_trips_text() -> str:
-    """Возвращает демонстрационный текст истории поездок пользователя.
+def get_screen_7_visited_cities_text(visited_cities: list[VisitedCity]) -> str:
+    """Формирует сообщение со всей историей поездок пользователя."""
 
-    Пока репозиторий не реализован, здесь используются фиксированные примеры.
-    В дальнейшем строки должны формироваться из записей базы данных.
-    """
-    return (
-        "Список городов\n\n"
-        "1. 10.08.2026 — Москва\n\n"
-        "2. 03.08.2026 — Калуга\n\n"
-        "3. 25.07.2026 — Орёл\n\n"
-        "4. 18.07.2026 — Тула\n\n"
-        "5. 11.07.2026 — Рязань"
-    )
+    # Пустая история отображается отдельным сообщением без заголовка списка.
+    if len(visited_cities) == 0:
+        return "Список городов пуст."
+
+    output_text = "Список посещённых городов:\n\n"
+
+    # Репозиторий уже возвращает записи от новых к старым.
+    for visited_city in visited_cities:
+        output_text += (
+            f"{visited_city.arrival_date_to_normal_str()} - {visited_city.name}\n\n"
+        )
+
+    return output_text

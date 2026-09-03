@@ -1,8 +1,9 @@
-"""Бизнес-логика раздела праздников приложения TravelHunter.
+"""Бизнес-логика разделов главного меню приложения TravelHunter.
 
 Модуль получает данные сразу для нескольких стран, выбирает события ближайшей
 недели и готовит единый список для Telegram-интерфейса. HTTP-запросы при этом
 остаются в API-слое, а обработчики не содержат бизнес-правил фильтрации.
+Здесь же находится операция получения истории поездок из репозитория.
 """
 
 from models.holliday import Holiday
@@ -10,6 +11,8 @@ from models.holliday import Holiday
 from datetime import date, timedelta
 
 from api.hollidays_api import *
+
+from repositories.cities_repository import *
 
 
 def get_holidays_for_next_7_days() -> list[Holiday]:
@@ -87,3 +90,9 @@ def filter_holidays(holidays: list[Holiday]) -> list[Holiday]:
     # Исходный порядок элементов сохраняется; общая сортировка выполняется
     # после объединения результатов разных стран.
     return filtered_holidays
+
+
+def get_all_user_visited_cities(tg_user_id: int):
+    """Получает из базы данных историю поездок пользователя."""
+
+    return select_all_visited_cities(tg_user_id)

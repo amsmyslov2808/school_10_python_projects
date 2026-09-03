@@ -1,4 +1,4 @@
-"""Клавиатуры экранов выбора города и его подробностей."""
+"""Клавиатура экрана выбора ближайшего города."""
 
 import telebot
 
@@ -19,9 +19,10 @@ def get_screen_5_nearby_cities_keyboard(
         keyboard.add(
             telebot.types.InlineKeyboardButton(
                 f"Выбрать город {city_index+1}",
-                callback_data=f"screen_5_choose_city_{city_index}",
+                callback_data=f"{city_index}",
             )
         )
 
-    # Обработчик выбора города будет добавлен вместе с шестым экраном.
+    # Обработчик экрана 5 использует индекс кнопки для доступа к сохранённому
+    # в состоянии списку nearby_cities.
     return keyboard

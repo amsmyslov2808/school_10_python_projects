@@ -16,8 +16,7 @@ from services.screen_2_services import *
 def show_screen_3_holidays(chat_id: int, state: StateContext):
     """Переводит диалог на экран праздников и отправляет его содержимое.
 
-    При сбое внешнего сервиса остаётся то же состояние экрана: пользователь
-    увидит клавиатуру и сможет вернуться в главное меню.
+    При сбое внешнего сервиса состояние экрана остаётся прежним.
     """
 
     # Новое состояние определит, какие обработчики активны после перехода.
@@ -31,16 +30,18 @@ def show_screen_3_holidays(chat_id: int, state: StateContext):
         bot.send_message(
             chat_id,
             get_screen_3_holidays_text(holidays),
-            reply_markup=get_screen_3_holidays_keyboard(),
+            # Клавиатуру пока не выводим: для её кнопки ещё нет обработчика.
+            # reply_markup=get_screen_3_holidays_keyboard(),
         )
 
     except:
-        # Если внешний API недоступен или ответ не удалось обработать,
-        # оставляем пользователю возможность повторить запрос с этого экрана.
+        # Сообщаем пользователю, если внешний API недоступен или его ответ
+        # не удалось обработать.
         bot.send_message(
             chat_id,
             "Ошибка в получении праздников с сервера.\nПопробуйте повторить запрос ещё раз через минуту",
-            reply_markup=get_screen_3_holidays_keyboard(),
+            # Клавиатуру пока не выводим: для её кнопки ещё нет обработчика.
+            # reply_markup=get_screen_3_holidays_keyboard(),
         )
 
 
@@ -52,20 +53,31 @@ def show_screen_4_city_input(chat_id: int, state: StateContext):
     bot.send_message(
         chat_id,
         get_screen_4_city_input_text(),
-        reply_markup=get_screen_4_city_input_keyboard(),
+        # Клавиатуру пока не выводим: для её кнопки ещё нет обработчика.
+        # reply_markup=get_screen_4_city_input_keyboard(),
     )
 
 
-def show_screen_7_trips(chat_id: int, state: StateContext):
-    """Переключает диалог на экран истории поездок."""
+def show_screen_7_visited_cities(chat_id: int, tg_user_id: int, state: StateContext):
+    """Загружает из базы и показывает историю поездок пользователя."""
 
-    # Экран пока использует демонстрационные данные из texts.py.
-    state.set(TravelStates.screen_7_trips)
-    bot.send_message(
-        chat_id,
-        get_screen_7_trips_text(),
-        reply_markup=get_screen_7_trips_keyboard(),
-    )
+    try:
+        # Telegram ID ограничивает выборку поездками текущего пользователя.
+        visited_cities = get_all_user_visited_cities(tg_user_id)
+
+        # Состояние меняем только после успешного обращения к базе данных.
+        state.set(TravelStates.screen_7_visited_cities)
+
+        bot.send_message(
+            chat_id,
+            get_screen_7_visited_cities_text(visited_cities),
+        )
+    except:
+        # Ошибки подключения и чтения БД не должны завершать работу бота.
+        bot.send_message(
+            chat_id,
+            "Ошибка работы с базой данных. Не удалось загрузить историю поездок. Попробуйте ещё раз позже.",
+        )
 
 
 @bot.callback_query_handler(state=TravelStates.screen_2_main_menu)
@@ -87,5 +99,5 @@ def callback_screen_2_main_menu_handler(call: types.CallbackQuery, state: StateC
     elif call.data == "screen_2_input_city":
         show_screen_4_city_input(call.message.chat.id, state)
 
-    elif call.data == "screen_2_show_trips":
-        show_screen_7_trips(call.message.chat.id, state)
+    elif call.data == "screen_2_show_visited_cities":
+        show_screen_7_visited_cities(call.message.chat.id, call.from_user.id, state)
