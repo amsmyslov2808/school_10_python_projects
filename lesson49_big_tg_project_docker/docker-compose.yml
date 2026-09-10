@@ -1,15 +1,21 @@
 services:
+  # Контейнер с базой данных PostgreSQL.
   postgres:
     image: postgres:13.3
     restart: always
+
+    # Параметры создания базы и каталог хранения её данных внутри контейнера.
     environment:
       POSTGRES_DB: "travel_hunter_db"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "12345"
       PGDATA: "/var/lib/postgresql/data/pgdata"
+
+    # Данные сохраняются на компьютере, а init.sql создаёт таблицы при первом запуске.
     volumes:
       - ./dbdata:/var/lib/postgresql/data
       - ./dbroot/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
     healthcheck:
       # Проверяем именно TCP-сервер. Во время выполнения init.sql PostgreSQL
       # временно принимает только локальные подключения через Unix-сокет,
@@ -18,13 +24,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+    # Порт 46069 компьютера перенаправляется на стандартный порт PostgreSQL.
     ports:
       - "46069:5432"
 
+  # Контейнер с Telegram-ботом.
   app:
+    # Образ собирается по Dockerfile из каталога pythonapp.
     build: ./pythonapp
     restart: always
+
+    # Бот запускается только после готовности базы принимать подключения.
     depends_on:
       postgres:
         condition: service_healthy
+
+    # Флаг -u отключает буферизацию вывода, чтобы логи сразу появлялись в Docker.
     command: python -u main.py
