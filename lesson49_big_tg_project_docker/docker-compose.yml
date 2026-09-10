@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:13.3
+    restart: always
+    environment:
+      POSTGRES_DB: "travel_hunter_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "12345"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+      - ./dbroot/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      # Проверяем именно TCP-сервер. Во время выполнения init.sql PostgreSQL
+      # временно принимает только локальные подключения через Unix-сокет,
+      # поэтому приложение не запустится раньше завершения инициализации.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d travel_hunter_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "46069:5432"
+
+  app:
+    build: ./pythonapp
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: python -u main.py
