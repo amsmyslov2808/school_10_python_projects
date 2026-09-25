@@ -4,3 +4,34 @@
 # Python cache на любом уровне вложенности
 __pycache__/
 *.py[cod]
+
+# C/C++: локальные настройки IDE
+.idea/
+*.iml
+.vs/
+*.vcxproj.user
+
+# C/C++: CMake и каталоги сборки
+cmake-build-*/
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+build.ninja
+.ninja_deps
+.ninja_log
+rules.ninja
+
+# C/C++: скомпилированные файлы и библиотеки
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+a.out
