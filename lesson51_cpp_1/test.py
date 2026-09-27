@@ -1,18 +1,20 @@
-def func(a):
-    return a + 5
+# n = 1
+# summ = 0
+
+# while n != 0:
+#     n = int(input("введите текущее число (0 для окончания ввода): "))
+#     summ += n
+
+# print(f"сумма  = {summ}")
 
 
-def func2(a):
-    return a + 5
+for i in range(1, 100 + 1, 2):
+    pass
 
+# choose_action = 1
 
-def func3(a):
-    return a + 5
-
-
-def proc():
-    print("aaa")
-
-
-func("hello")
-func2("hello")
+# if choose_action==1:
+# elif choose_action==2:
+# elif choose_action==3:
+# elif choose_action==4:
+# else:
